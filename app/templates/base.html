@@ -2,7 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Responsive viewport with safe-area insets for notch devices -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <!-- ===== PWA Meta Tags ===== -->
+  <meta name="theme-color" content="#05060a" />
+  <meta name="description" content="CyberShield — Awareness + Protection Against Modern Cyber Threats. Cookie Protection, UPI Fraud Detection, Ransomware Recovery." />
+  <link rel="manifest" href="{{ url_for('pwa.manifest') }}" />
+  <!-- iOS PWA meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CyberShield" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='pwa/icons/icon-192.png') }}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='pwa/icons/icon-192.png') }}" />
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='pwa/icons/icon-512.png') }}" />
+
   <title>{% block title %}CyberShield{% endblock %}</title>
 
   <!-- Bootstrap 5 -->
@@ -21,8 +36,10 @@
   <!-- Particle Background -->
   <canvas id="particles-js" aria-hidden="true"></canvas>
 
-  <!-- Navbar (fixed on all pages) -->
-  <nav class="navbar navbar-expand-lg navbar-dark cyber-nav fixed-top">
+  <!-- ============================================================
+       NAVBAR — Glassmorphism, responsive (hamburger on mobile)
+       ============================================================ -->
+  <nav class="navbar navbar-expand-lg navbar-dark cyber-nav fixed-top" aria-label="Main navigation">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.home') }}">
         <span class="cyber-logo">
@@ -31,38 +48,43 @@
         <span class="brand-text">CyberShield</span>
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample" aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample"
+              aria-controls="navbarsExample" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExample">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-underline">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-underline align-items-lg-center">
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.home') }}">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.about_us') }}">About Us</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact_us') }}">Contact Us</a></li>
 
           {% if current_user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('modules.dashboard') }}">Security Center</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket me-1"></i>Logout</a></li>
           {% else %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login/Register</a></li>
           {% endif %}
 
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_login') }}">Admin Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.admin_login') }}"><i class="fa-solid fa-user-shield me-1"></i>Admin Login</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
   <!-- Spacer for fixed navbar -->
-  <div class="nav-spacer"></div>
+  <div class="nav-spacer" aria-hidden="true"></div>
 
-  <main class="container py-4">
+  <!-- ============================================================
+       PAGE WRAPPER — smooth page-transition fade
+       ============================================================ -->
+  <main class="page-wrap container py-4">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="flash-stack">
+        <div class="flash-stack" aria-live="polite">
           {% for category, msg in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <div class="alert alert-{{ category }} alert-dismissible fade show cyber-alert" role="alert">
+              <i class="fa-solid {{ 'fa-circle-check' if category == 'success' else 'fa-circle-exclamation' if category == 'danger' else 'fa-circle-info' }} me-2"></i>
               {{ msg }}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -73,6 +95,51 @@
 
     {% block content %}{% endblock %}
   </main>
+
+  <!-- ============================================================
+       MOBILE APP INSTALL PROMPT (PWA)
+       Shown after beforeinstallprompt fires — hidden on desktop.
+       ============================================================ -->
+  <div class="install-prompt d-none" id="installPrompt" role="dialog" aria-label="Install app">
+    <div class="install-prompt-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <div class="install-prompt-text">
+      <strong>Install CyberShield</strong>
+      <span class="small d-block text-muted">Add to home screen for a native app experience.</span>
+    </div>
+    <button class="btn btn-sm cyber-btn" id="installPromptBtn">Install</button>
+    <button class="btn-close ms-2" id="installPromptClose" aria-label="Dismiss"></button>
+  </div>
+
+  <!-- ============================================================
+       STICKY BOTTOM NAVIGATION — mobile app experience
+       Hidden on desktop (>= 992px). Links match navbar routes.
+       ============================================================ -->
+  {% set active_path = request.path %}
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a href="{{ url_for('main.home') }}"
+       class="bottom-nav-item {{ 'active' if active_path == url_for('main.home') else '' }}">
+      <i class="fa-solid fa-house"></i><span>Home</span>
+    </a>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('modules.dashboard') }}"
+         class="bottom-nav-item {{ 'active' if active_path == url_for('modules.dashboard') else '' }}">
+        <i class="fa-solid fa-shield-halved"></i><span>Security</span>
+      </a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}"
+         class="bottom-nav-item {{ 'active' if active_path == url_for('auth.login') else '' }}">
+        <i class="fa-solid fa-right-to-bracket"></i><span>Login</span>
+      </a>
+    {% endif %}
+    <a href="{{ url_for('main.contact_us') }}"
+       class="bottom-nav-item {{ 'active' if active_path == url_for('main.contact_us') else '' }}">
+      <i class="fa-solid fa-envelope"></i><span>Contact</span>
+    </a>
+    <a href="{{ url_for('main.about_us') }}"
+       class="bottom-nav-item {{ 'active' if active_path == url_for('main.about_us') else '' }}">
+      <i class="fa-solid fa-circle-info"></i><span>About</span>
+    </a>
+  </nav>
 
   <footer class="cyber-footer mt-5">
     <div class="container py-4">
@@ -99,10 +166,15 @@
     </div>
   </footer>
 
+  <!-- ===== OFFLINE / CONNECTION INDICATOR ===== -->
+  <div class="connection-badge d-none" id="connectionBadge" role="status">
+    <i class="fa-solid fa-wifi"></i>
+    <span id="connectionBadgeText">You are offline</span>
+  </div>
+
   <!-- Particle.js -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script src="{{ url_for('static', filename='js/particles-config.js') }}"></script>
-
 
   <!-- Bootstrap bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

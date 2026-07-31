@@ -1,12 +1,16 @@
+// ==========================================================================
 // CyberShield frontend JS
+// All original functionality preserved; new additions (PWA registration,
+// bottom-nav behavior, install prompt, connection badge) are clearly marked.
+// ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // AOS init
+  // ===== ORIGINAL: AOS init =====
   if (window.AOS) {
     window.AOS.init({ duration: 800, once: true });
   }
 
-  // Particle init
+  // ===== ORIGINAL: Particle init (no-op kept for compatibility) =====
   try {
     if (window.particlesJS) {
       // particlesJS already initialized in particles-config.js (optional)
@@ -15,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch (e) {}
 
-  // Animate counters (data-counter attribute)
+  // ===== ORIGINAL: Animate counters (data-counter attribute) =====
   const els = document.querySelectorAll('[data-counter]');
   els.forEach((el) => {
     const target = Number(el.getAttribute('data-counter') || '0');
@@ -49,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     io.observe(el);
   });
 
-// ===== BACKUP & RANSOMWARE RECOVERY STATS LOADER =====
+  // ===== ORIGINAL: BACKUP & RANSOMWARE RECOVERY STATS LOADER =====
   const statsContainer = document.getElementById('ransomware-stats');
   if (statsContainer) {
     fetch('/api/ransomware/stats')
@@ -77,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // ===== RANSOMWARE SCAN FORM ANIMATION =====
+  // ===== ORIGINAL: RANSOMWARE SCAN FORM ANIMATION =====
   const scanForm = document.getElementById('scanForm');
   if (scanForm) {
     const scanInput = document.getElementById('scanFileInput');
@@ -161,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ===== DECRYPT BUTTON HANDLER (ENHANCED) =====
+  // ===== ORIGINAL: DECRYPT BUTTON HANDLER (ENHANCED) =====
   document.querySelectorAll('.decrypt-btn').forEach(btn => {
     btn.addEventListener('click', function () {
       const scanId = this.dataset.scanId;
@@ -234,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let openBtnHtml = '';
             if (data.open_url) {
               openBtnHtml = `
-                <a href="${data.open_url}" target="_blank" class="btn btn-open-file" target="_blank">
+                <a href="${data.open_url}" target="_blank" class="btn btn-open-file">
                   <i class="fa-solid fa-eye me-1"></i> Open File
                 </a>
               `;
@@ -399,13 +403,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ===== BREACH CHECK BUTTON HANDLER =====
+  // ===== ORIGINAL: BREACH CHECK BUTTON HANDLER =====
   const breachCheckBtn = document.getElementById('checkBreachBtn');
   if (breachCheckBtn) {
     // Handler is in cookies.html template directly
   }
 
-  // ===== RISK METER ANIMATION =====
+  // ===== ORIGINAL: RISK METER ANIMATION =====
   const riskMeterFill = document.querySelector('.risk-meter-fill');
   if (riskMeterFill) {
     const observer = new IntersectionObserver(
@@ -428,4 +432,118 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     observer.observe(riskMeterFill);
   }
+
+  // ======================================================================
+  // NEW: PWA SERVICE WORKER REGISTRATION
+  // ======================================================================
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((reg) => {
+          console.log('[CyberShield] Service worker registered:', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('[CyberShield] Service worker registration failed:', err);
+        });
+    });
+  }
+
+  // ======================================================================
+  // NEW: BEFORE INSTALL PROMPT (PWA install button UI)
+  // ======================================================================
+  let deferredPrompt = null;
+  const installPromptEl = document.getElementById('installPrompt');
+  const installBtn = document.getElementById('installPromptBtn');
+  const installClose = document.getElementById('installPromptClose');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installPromptEl) {
+      installPromptEl.classList.remove('d-none');
+    }
+  });
+
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        console.log('[CyberShield] App installed.');
+      }
+      deferredPrompt = null;
+      if (installPromptEl) installPromptEl.classList.add('d-none');
+    });
+  }
+
+  if (installClose) {
+    installClose.addEventListener('click', () => {
+      if (installPromptEl) installPromptEl.classList.add('d-none');
+      deferredPrompt = null;
+    });
+  }
+
+  // Hide install prompt after app is installed
+  window.addEventListener('appinstalled', () => {
+    if (installPromptEl) installPromptEl.classList.add('d-none');
+    deferredPrompt = null;
+  });
+
+  // ======================================================================
+  // NEW: BOTTOM NAV — hide on keyboard open (mobile), show on scroll up
+  // ======================================================================
+  const bottomNav = document.querySelector('.bottom-nav');
+  if (bottomNav) {
+    let lastY = window.scrollY;
+    let keyboardOpen = false;
+
+    const maybeHide = () => {
+      // Detect virtual keyboard on small screens: if viewport height shrinks
+      // substantially, assume keyboard is open and slide the nav away.
+      if (window.innerHeight < 400) {
+        keyboardOpen = true;
+        bottomNav.classList.add('hide-bottom');
+      } else if (keyboardOpen) {
+        keyboardOpen = false;
+        bottomNav.classList.remove('hide-bottom');
+      }
+    };
+
+    window.addEventListener('resize', maybeHide);
+
+    // Hide on scroll down, show on scroll up (desktop-adjacent behavior)
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (Math.abs(y - lastY) > 40) {
+        if (y > lastY && y > 80) {
+          bottomNav.classList.add('hide-bottom');
+        } else {
+          bottomNav.classList.remove('hide-bottom');
+        }
+        lastY = y;
+      }
+    }, { passive: true });
+  }
+
+  // ======================================================================
+  // NEW: ONLINE / OFFLINE CONNECTION BADGE
+  // ======================================================================
+  const connBadge = document.getElementById('connectionBadge');
+  const connText = document.getElementById('connectionBadgeText');
+
+  const updateConnection = () => {
+    if (!connBadge || !connText) return;
+    if (navigator.onLine) {
+      connBadge.classList.add('d-none');
+    } else {
+      connBadge.classList.remove('d-none');
+      connText.textContent = 'You are offline';
+    }
+  };
+
+  window.addEventListener('online', updateConnection);
+  window.addEventListener('offline', updateConnection);
+  updateConnection();
 });
+

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#05060a" />
+  <title>Offline - CyberShield</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(1000px 500px at 10% 10%, rgba(39,215,255,.15), transparent 55%),
+        radial-gradient(800px 400px at 90% 20%, rgba(74,125,255,.12), transparent 50%),
+        #05060a;
+      color: #e9f2ff;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .card {
+      background: rgba(10, 18, 35, .72);
+      border: 1px solid rgba(39, 215, 255, .18);
+      border-radius: 22px;
+      padding: clamp(1.75rem, 6vw, 3rem);
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .shield {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 1.25rem;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, rgba(39,215,255,.25), rgba(74,125,255,.25));
+      border: 1px solid rgba(39,215,255,.35);
+      box-shadow: 0 0 40px rgba(39,215,255,.25);
+    }
+    h1 { font-size: clamp(1.4rem, 5vw, 1.8rem); margin-bottom: .6rem; }
+    p { color: rgba(233,242,255,.7); font-size: clamp(.9rem, 3vw, 1rem); line-height: 1.6; }
+    .retry {
+      margin-top: 1.4rem;
+      display: inline-block;
+      padding: .9rem 1.6rem;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(39,215,255,.95), rgba(74,125,255,.95));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(39,215,255,.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="alert">
+    <div class="shield">🛡️</div>
+    <h1>You're Offline</h1>
+    <p>
+      CyberShield requires a connection to perform security scans.
+      Please check your internet connection and try again.
+    </p>
+    <button class="retry" onclick="location.reload()">
+      Retry Connection
+    </button>
+  </div>
+</body>
+</html>
+

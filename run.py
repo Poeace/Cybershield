@@ -9,6 +9,7 @@ from app.blueprints.auth.routes import auth_bp
 from app.blueprints.admin.routes import admin_bp
 from app.blueprints.main.routes import main_bp
 from app.blueprints.modules.routes import modules_bp
+from app.pwa import pwa_bp
 
 
 def create_app() -> Flask:
@@ -36,6 +37,9 @@ def create_app() -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(modules_bp)
     app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    # PWA support (manifest.json, service-worker.js, offline.html)
+    app.register_blueprint(pwa_bp)
 
     return app
 

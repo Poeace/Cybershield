@@ -41,9 +41,10 @@
 
           <div class="mb-3">
             <label class="form-label">Captcha</label>
-            <div class="d-flex gap-2 align-items-center">
-              <span class="badge bg-dark text-white">{{ captcha_text }}</span>
-              <input class="form-control" name="captcha" required maxlength="10" placeholder="Enter captcha" />
+            <!-- Responsive captcha row: wraps on mobile, stays inline on desktop -->
+            <div class="captcha-row">
+              <span class="badge bg-dark text-white captcha-badge">{{ captcha_text }}</span>
+              <input class="form-control" name="captcha" required maxlength="10" placeholder="Enter captcha" aria-label="Enter captcha" />
             </div>
           </div>
 

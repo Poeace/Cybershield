@@ -11,24 +11,24 @@
         <form method="post" action="{{ url_for('auth.contact_submit') }}" class="mt-4">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">Name</label>
-              <input class="form-control" name="name" required maxlength="120" />
+              <label class="form-label" for="contact_name">Name</label>
+              <input class="form-control" id="contact_name" name="name" required maxlength="120" aria-label="Your name" />
             </div>
             <div class="col-md-6">
-              <label class="form-label">Email</label>
-              <input class="form-control" type="email" name="email" required maxlength="120" />
+              <label class="form-label" for="contact_email">Email</label>
+              <input class="form-control" id="contact_email" type="email" name="email" required maxlength="120" aria-label="Your email" />
             </div>
             <div class="col-12">
-              <label class="form-label">Subject</label>
-              <input class="form-control" name="subject" required maxlength="200" />
+              <label class="form-label" for="contact_subject">Subject</label>
+              <input class="form-control" id="contact_subject" name="subject" required maxlength="200" aria-label="Subject" />
             </div>
             <div class="col-12">
-              <label class="form-label">Message</label>
-              <textarea class="form-control" name="message" rows="5" required maxlength="5000"></textarea>
+              <label class="form-label" for="contact_message">Message</label>
+              <textarea class="form-control" id="contact_message" name="message" rows="5" required maxlength="5000" aria-label="Your message"></textarea>
             </div>
           </div>
 
-          <button class="btn cyber-btn mt-3" type="submit" style="width:100%">
+          <button class="btn cyber-btn mt-3 w-100" type="submit" style="min-height:48px;">
             Submit <i class="fa-solid fa-paper-plane ms-2"></i>
           </button>
         </form>

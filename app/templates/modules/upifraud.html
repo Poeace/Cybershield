@@ -12,17 +12,22 @@
             <p class="text-muted small mb-4">Enter a UPI ID or upload a UPI QR. Server decodes QR and computes a fraud risk score.</p>
             <form method="post" action="{{ url_for('modules.upi_module') }}" enctype="multipart/form-data">
               <div class="mb-4">
-                <label class="form-label">UPI ID <span class="text-muted">(required)</span></label>
-                <input class="form-control" name="upi_id" maxlength="120" placeholder="name@bank" value="{{ request.form.get('upi_id','') if request and request.form else '' }}" />
+                <label class="form-label" for="upi_id">UPI ID <span class="text-muted">(required)</span></label>
+                <input class="form-control" id="upi_id" name="upi_id" maxlength="120" placeholder="name@bank" value="{{ request.form.get('upi_id','') if request and request.form else '' }}" />
               </div>
               <div class="mb-4">
-                <label class="form-label">Or Upload UPI QR</label>
-                <input class="form-control" type="file" name="qr_image" accept="image/*" />
-                <div class="form-text text-muted">PNG / JPG supported.</div>
+                <label class="form-label" for="qr_image">Or Upload UPI QR</label>
+                <!-- Custom responsive file picker (full-width tap zone on mobile) -->
+                <div class="upload-zone">
+                  <i class="fa-solid fa-qrcode" style="color: rgba(39,215,255,0.5);"></i>
+                  <p class="mt-2 mb-1"><strong>Tap to upload</strong> a QR image</p>
+                  <p class="text-muted small mb-0">PNG / JPG supported.</p>
+                  <input class="file-input" type="file" id="qr_image" name="qr_image" accept="image/*" />
+                </div>
               </div>
               <div class="mb-4">
-                <label class="form-label">Payment link / text <span class="text-muted">(optional)</span></label>
-                <textarea class="form-control" name="payment_link" rows="4" maxlength="2000" placeholder="Paste the payment URL or message text here">{{ request.form.get('payment_link','') if request and request.form else '' }}</textarea>
+                <label class="form-label" for="payment_link">Payment link / text <span class="text-muted">(optional)</span></label>
+                <textarea class="form-control" id="payment_link" name="payment_link" rows="4" maxlength="2000" placeholder="Paste the payment URL or message text here">{{ request.form.get('payment_link','') if request and request.form else '' }}</textarea>
               </div>
               <div class="d-grid gap-2">
                 <button class="btn cyber-btn" type="submit" name="scan" value="1">

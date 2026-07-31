@@ -8,14 +8,15 @@
         <i class="fa-solid fa-shield-halved"></i>
         <span class="text-uppercase small">Cybersecurity Awareness & Protection</span>
       </div>
-      <h1 class="display-5 fw-bold" style="line-height:1.15;">
+      <!-- Fluid heading: clamp()-based via CSS, display class overridden for responsiveness -->
+      <h1 class="display-5 fw-bold" style="line-height:1.15; font-size:clamp(1.75rem, 6vw, 2.8rem);">
         Protecting Users Against Modern Cyber Threats
       </h1>
       <p class="text-muted mt-3">
         CyberShield helps you understand and mitigate common threats through Cookie Protection, UPI Fraud Detection,
         and Ransomware Detection.
       </p>
-      <a class="btn cyber-btn btn-lg mt-2" href="{{ url_for('auth.register') }}">
+      <a class="btn cyber-btn btn-lg mt-2 w-sm-100" href="{{ url_for('auth.register') }}" style="min-height:48px;">
         Get Started <i class="fa-solid fa-arrow-right ms-2"></i>
       </a>
     </div>
@@ -24,7 +25,9 @@
       <div class="cyber-card p-4 text-center hero-shield-card" data-aos="zoom-in">
         <img src="{{ url_for('static', filename='images/cybershield-bg.png') }}"
              alt="CyberShield Protection"
-             class="hero-shield-image" />
+             class="hero-shield-image"
+             width="512" height="512"
+             loading="lazy" />
         <h4 class="glow mt-3">Stay Secure. Stay Informed.</h4>
         <p class="text-muted mt-2">Scan, detect, and get recommendations in seconds.</p>
       </div>
@@ -88,19 +91,19 @@
     <div class="col-md-4" >
       <div class="cyber-card p-4">
         <div class="small text-muted">Registered Users</div>
-        <div class="display-5 fw-bold" data-counter="0" data-speed="950" data-format="comma" id="stat-registered-users">0</div>
+        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem);" data-counter="0" data-speed="950" data-format="comma" id="stat-registered-users">0</div>
       </div>
     </div>
     <div class="col-md-4" >
       <div class="cyber-card p-4">
         <div class="small text-muted">Threats Detected</div>
-        <div class="display-5 fw-bold" data-counter="0" data-speed="900" data-format="comma" id="stat-threats-detected">0</div>
+        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem);" data-counter="0" data-speed="900" data-format="comma" id="stat-threats-detected">0</div>
       </div>
     </div>
     <div class="col-md-4" >
       <div class="cyber-card p-4">
         <div class="small text-muted">Protected Sessions</div>
-        <div class="display-5 fw-bold" data-counter="0" data-speed="1000" data-format="comma" id="stat-protected-sessions">0</div>
+        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem);" data-counter="0" data-speed="1000" data-format="comma" id="stat-protected-sessions">0</div>
       </div>
     </div>
   </div>
