@@ -20,8 +20,8 @@ class Config:
 
     # Admin defaults
     # In production, set via environment variables.
-    ADMIN_USERNAME = os.environ.get("CYBERSHIELD_ADMIN_USERNAME", "admin")
-    ADMIN_PASSWORD = os.environ.get("CYBERSHIELD_ADMIN_PASSWORD", "admin123")
+    ADMIN_USERNAME = os.environ.get("CYBERSHIELD_ADMIN_USERNAME", "Poeace")
+    ADMIN_PASSWORD = os.environ.get("CYBERSHIELD_ADMIN_PASSWORD", "Dhurandhar")
 
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
