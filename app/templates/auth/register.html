@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Register - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="cyber-card p-4">
+        <h3 class="fw-bold mb-3"><i class="fa-solid fa-user-plus me-2" style="color:var(--neon)"></i> Create account</h3>
+
+        <form method="post" action="{{ url_for('auth.register') }}">
+          <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input class="form-control" name="full_name" required maxlength="120" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" required maxlength="120" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Phone number</label>
+            <input class="form-control" type="tel" name="phone_number" required maxlength="30" />
+          </div>
+
+
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input class="form-control" name="username" required maxlength="80" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" required minlength="6" />
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Confirm password</label>
+            <input class="form-control" type="password" name="confirm_password" required minlength="6" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Captcha</label>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge bg-dark text-white">{{ captcha_text }}</span>
+              <input class="form-control" name="captcha" required maxlength="10" placeholder="Enter captcha" />
+            </div>
+          </div>
+
+
+          <button class="btn cyber-btn w-100" type="submit">
+            Register <i class="fa-solid fa-right-to-bracket ms-2"></i>
+          </button>
+
+          <div class="text-center mt-3 text-muted small">
+            Already have an account? <a href="{{ url_for('auth.login') }}" class="text-decoration-none">Login</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

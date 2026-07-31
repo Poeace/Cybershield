@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Security Center - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <!-- ===== HEADER ===== -->
+  <div class="row g-3">
+    <div class="col-12">
+      <h2 class="fw-bold"><i class="fa-solid fa-shield-halved me-2" style="color:var(--neon)"></i> Security Center</h2>
+      <p class="text-muted">Choose a module to run simulated cyber threat checks.</p>
+    </div>
+  </div>
+
+  <!-- ===== MODULE CARDS ===== -->
+  <div class="row g-4 mt-1">
+    <div class="col-md-4 col-sm-6" data-aos="flip-left" data-aos-delay="50">
+      <div class="cyber-card p-4 h-100 d-flex flex-column">
+        <div class="card-icon mb-3">
+          <i class="fa-solid fa-cookie-bite" style="font-size:2.2rem; color:var(--neon);"></i>
+        </div>
+        <h5 class="fw-bold">Cookie Protection</h5>
+        <p class="text-muted small mt-1 flex-grow-1">Assess tracking and cross-site cookie risk.</p>
+        <a class="btn cyber-btn mt-auto w-100" href="{{ url_for('modules.cookie_module') }}">
+          Open module <i class="fa-solid fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Cookie Protection & Breach Check card removed per user request -->
+
+    <div class="col-md-4 col-sm-6" data-aos="flip-left" data-aos-delay="120">
+      <div class="cyber-card p-4 h-100 d-flex flex-column">
+        <div class="card-icon mb-3">
+          <i class="fa-solid fa-receipt" style="font-size:2.2rem; color:var(--neon);"></i>
+        </div>
+        <h5 class="fw-bold">UPI Fraud Detection</h5>
+        <p class="text-muted small mt-1 flex-grow-1">Detect suspicious patterns in UPI links/wording.</p>
+        <a class="btn cyber-btn mt-auto w-100" href="{{ url_for('modules.upi_module') }}">
+          Open module <i class="fa-solid fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6" data-aos="flip-left" data-aos-delay="190">
+      <div class="cyber-card p-4 h-100 d-flex flex-column">
+        <div class="card-icon mb-3">
+          <i class="fa-solid fa-database" style="font-size:2.2rem; color:var(--neon);"></i>
+        </div>
+        <h5 class="fw-bold">Backup & Ransomware Recovery</h5>
+        <p class="text-muted small mt-1 flex-grow-1">Secure backups, ransomware simulation & recovery.</p>
+        <a class="btn cyber-btn mt-auto w-100" href="{{ url_for('modules.ransomware_module') }}">
+          Open module <i class="fa-solid fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BACKUP & RANSOMWARE RECOVERY STATISTICS ===== -->
+  <div id="ransomware-stats" class="mt-5 pt-4 border-top border-light border-opacity-10" data-aos="fade-up">
+    <h4 class="fw-bold mb-4"><i class="fa-solid fa-chart-line me-2" style="color:var(--neon)"></i> Backup & Recovery Statistics</h4>
+    <div class="row g-3">
+      <div class="col-md-2-4 col-6">
+        <div class="stat-card text-center d-flex flex-column align-items-center justify-content-center">
+          <div class="stat-icon mx-auto mb-2" style="background: rgba(39,215,255,0.12); color: var(--neon);">
+            <i class="fa-solid fa-shield"></i>
+          </div>
+          <div class="stat-value" id="protected-files" data-counter="0">0</div>
+          <div class="stat-label">Protected Files</div>
+        </div>
+      </div>
+      <div class="col-md-2-4 col-6">
+        <div class="stat-card text-center d-flex flex-column align-items-center justify-content-center">
+          <div class="stat-icon mx-auto mb-2" style="background: rgba(39,215,255,0.12); color: var(--neon);">
+            <i class="fa-solid fa-database"></i>
+          </div>
+          <div class="stat-value" id="backups-created" data-counter="0">0</div>
+          <div class="stat-label">Backups Created</div>
+        </div>
+      </div>
+      <div class="col-md-2-4 col-6">
+        <div class="stat-card text-center d-flex flex-column align-items-center justify-content-center">
+          <div class="stat-icon mx-auto mb-2" style="background: rgba(46,229,157,0.12); color: var(--safe);">
+            <i class="fa-solid fa-rotate-left"></i>
+          </div>
+          <div class="stat-value" id="files-restored" data-counter="0">0</div>
+          <div class="stat-label">Files Restored</div>
+        </div>
+      </div>
+      <div class="col-md-2-4 col-6">
+        <div class="stat-card text-center d-flex flex-column align-items-center justify-content-center">
+          <div class="stat-icon mx-auto mb-2" style="background: rgba(255,77,109,0.12); color: var(--danger);">
+            <i class="fa-solid fa-bug"></i>
+          </div>
+          <div class="stat-value" id="threats-detected" data-counter="0">0</div>
+          <div class="stat-label">Threats Detected</div>
+        </div>
+      </div>
+      <div class="col-md-2-4 col-6">
+        <div class="stat-card text-center d-flex flex-column align-items-center justify-content-center">
+          <div class="stat-icon mx-auto mb-2" style="background: rgba(46,229,157,0.12); color: var(--safe);">
+            <i class="fa-solid fa-percentage"></i>
+          </div>
+          <div class="stat-value" id="recovery-rate" data-counter="0">100%</div>
+          <div class="stat-label">Recovery Success Rate</div>
+        </div>
+      </div>
+    </div>
+    <p class="text-muted small mt-3 text-center">
+      <i class="fa-solid fa-sync-alt fa-spin me-1"></i> Stats update automatically from backup history.
+    </p>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .col-md-2-4 {
+    flex: 0 0 20%;
+    max-width: 20%;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+  @media (max-width: 991.98px) {
+    .col-md-2-4 {
+      flex: 0 0 33.333%;
+      max-width: 33.333%;
+    }
+  }
+  @media (max-width: 767.98px) {
+    .col-md-2-4 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+</style>
+{% endblock %}

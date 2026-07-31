@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block title %}UPI Fraud Detection - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="container-fluid fullpage-grid px-4">
+    <div class="row g-4">
+      <!-- ===== ANALYZE GRID (Left) ===== -->
+      <div class="col-lg-6 d-flex">
+        <div class="analyze-grid w-100">
+          <div class="cyber-card p-4 w-100">
+            <h3 class="fw-bold mb-3"><i class="fa-solid fa-receipt me-2" style="color:var(--neon)"></i> UPI Fraud Detection</h3>
+            <p class="text-muted small mb-4">Enter a UPI ID or upload a UPI QR. Server decodes QR and computes a fraud risk score.</p>
+            <form method="post" action="{{ url_for('modules.upi_module') }}" enctype="multipart/form-data">
+              <div class="mb-4">
+                <label class="form-label">UPI ID <span class="text-muted">(required)</span></label>
+                <input class="form-control" name="upi_id" maxlength="120" placeholder="name@bank" value="{{ request.form.get('upi_id','') if request and request.form else '' }}" />
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Or Upload UPI QR</label>
+                <input class="form-control" type="file" name="qr_image" accept="image/*" />
+                <div class="form-text text-muted">PNG / JPG supported.</div>
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Payment link / text <span class="text-muted">(optional)</span></label>
+                <textarea class="form-control" name="payment_link" rows="4" maxlength="2000" placeholder="Paste the payment URL or message text here">{{ request.form.get('payment_link','') if request and request.form else '' }}</textarea>
+              </div>
+              <div class="d-grid gap-2">
+                <button class="btn cyber-btn" type="submit" name="scan" value="1">
+                  <i class="fa-solid fa-shield-halved me-2"></i> Analyze <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+              </div>
+            </form>
+            {% if handle_error %}
+              <div class="alert alert-warning mt-4 mb-0" role="alert">{{ handle_error }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RESULT GRID (Right) ===== -->
+      <div class="col-lg-6 d-flex">
+        <div class="result-grid w-100">
+          <div class="result-card">
+            <h4 class="fw-bold mb-0">Result</h4>
+          </div>
+
+          {% if cyber_report_success %}
+            <div class="alert alert-success mb-0" role="alert">
+              <i class="fa-solid fa-check-circle me-2"></i> {{ cyber_report_success }}
+            </div>
+          {% endif %}
+
+          {% if scan %}
+            <!-- Status & Recommendation Card -->
+            <div class="grid-card">
+              <div class="card-title">Status & Recommendation</div>
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="fs-1">
+                  {% if scan.status == 'High Risk' %}&#128683;
+                  {% elif scan.status == 'Medium Risk' %}&#9888;&#65039;
+                  {% else %}&#9989;{% endif %}
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="status-dot
+                      {% if scan.status == 'High Risk' %}high
+                      {% elif scan.status == 'Medium Risk' %}medium
+                      {% else %}low{% endif %}"></span>
+                    <span class="badge border-1 p-2
+                      {% if scan.status == 'High Risk' %}badge-danger
+                      {% elif scan.status == 'Medium Risk' %}badge-warn
+                      {% else %}badge-safe{% endif %}">
+                      {{ scan.status }}
+                    </span>
+                  </div>
+                  <div class="fw-bold fs-6
+                    {% if scan.status == 'High Risk' %}text-danger
+                    {% elif scan.status == 'Medium Risk' %}text-warning
+                    {% else %}text-success{% endif %}">
+                    {{ scan.payment_recommendation }}
+                  </div>
+                  <div class="text-muted small mt-1">Based on our fraud analysis, this is the recommended action for this UPI ID.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risk Score Card -->
+            <div class="grid-card">
+              <div class="card-title">Risk Score</div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-value-large
+                  {% if scan.risk_score >= 75 %}text-danger
+                  {% elif scan.risk_score >= 35 %}text-warning
+                  {% else %}text-success{% endif %}">
+                  {{ scan.risk_score }}
+                </span>
+                <span class="text-muted">/ 100</span>
+              </div>
+              <div class="progress">
+                {% if scan.risk_score < 35 %}
+                  <div class="progress-bar bg-success" role="progressbar" style="width: {{ scan.risk_score }}%;"></div>
+                {% elif scan.risk_score < 75 %}
+                  <div class="progress-bar bg-warning" role="progressbar" style="width: {{ scan.risk_score }}%;"></div>
+                {% else %}
+                  <div class="progress-bar" role="progressbar" style="width: {{ scan.risk_score }}%; background: linear-gradient(90deg, #ff4d6d, #4a7dff);"></div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- UPI Info Card -->
+            <div class="grid-card">
+              <div class="card-title">UPI Information</div>
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="text-muted small mb-1">UPI Handle</div>
+                  <div class="card-value">{{ scan.upi_handle }}</div>
+                </div>
+                <div class="col-6">
+                  <div class="text-muted small mb-1">Provider</div>
+                  <div class="card-value">{{ scan.provider or 'Unknown' }}</div>
+                </div>
+                <div class="col-6">
+                  <div class="text-muted small mb-1">Previous Reports</div>
+                  <div class="card-value">{{ scan.report_count }}</div>
+                </div>
+                <div class="col-6">
+                  <div class="text-muted small mb-1">Last Scanned</div>
+                  <div class="card-value" style="font-size:0.9rem;">{{ scan.timestamp }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reasons & Recommendations Grid -->
+            <div class="row g-3">
+              {% if scan.reasons and scan.reasons|length > 0 %}
+                <div class="col-md-6">
+                  <div class="grid-card">
+                    <div class="card-title">Reasons</div>
+                    <ul>
+                      {% for r in scan.reasons %}
+                        <li>{{ r }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              {% endif %}
+              {% if scan.recommendations and scan.recommendations|length > 0 %}
+                <div class="col-md-6">
+                  <div class="grid-card">
+                    <div class="card-title">Safety Recommendations</div>
+                    <ul>
+                      {% for rec in scan.recommendations %}
+                        <li>{{ rec }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Action Buttons Card -->
+            <div class="grid-card">
+              <div class="card-title">Actions</div>
+              <div class="d-flex flex-wrap gap-2">
+                <form method="post" action="{{ url_for('modules.upi_module') }}">
+                  <input type="hidden" name="upi_id" value="{{ scan.upi_handle }}" />
+                  <input type="hidden" name="report" value="1" />
+                  <button class="btn btn-outline-warning" type="submit" {% if not scan.upi_handle %}disabled{% endif %}>
+                    <i class="fa-solid fa-flag me-1"></i> Report this UPI
+                  </button>
+                </form>
+                <form method="post" action="{{ url_for('modules.upi_module') }}">
+                  <input type="hidden" name="upi_id" value="{{ scan.upi_handle }}" />
+                  <input type="hidden" name="cyber_report" value="1" />
+                  <button class="btn btn-outline-danger" type="submit" {% if not scan.upi_handle %}disabled{% endif %}>
+                    <i class="fa-solid fa-shield-halved me-1"></i> Report to Cyber Team
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          {% else %}
+            <div class="grid-card">
+              <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
+                <i class="fa-solid fa-chart-line" style="font-size:3rem; color:rgba(39,215,255,0.2); margin-bottom:1rem;"></i>
+                <div class="text-muted">Run a scan to see your results here.</div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

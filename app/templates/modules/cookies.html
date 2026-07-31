@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}Cookie Protection & Breach Check - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="container-fluid fullpage-grid px-4">
+    <div class="row g-4">
+      <!-- ===== LEFT: COOKIE RISK ASSESSMENT + BREACH CHECK ===== -->
+      <div class="col-lg-6 d-flex">
+        <div class="analyze-grid w-100">
+          <div class="cyber-card p-4 w-100">
+            <h3 class="fw-bold mb-3"><i class="fa-solid fa-cookie-bite me-2" style="color:var(--neon)"></i> Cookie Protection</h3>
+            <p class="text-muted small mb-4">Assess your cookie risk and check if your personal information has been involved in data breaches.</p>
+
+            <!-- Data Breach Check Section -->
+            <div class="mb-4 p-3 rounded-3" style="background:rgba(39,215,255,0.05); border:1px solid rgba(39,215,255,0.15);">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fa-solid fa-shield-halved" style="color:var(--neon);"></i>
+                <span class="fw-semibold">Personal Data Breach Check</span>
+              </div>
+              <p class="small text-muted mb-2">
+                Checking your registered email and phone number against known data breaches.
+              </p>
+              <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted">Email: <strong>{{ current_user.email }}</strong></span>
+                {% if current_user.phone_number %}
+                <span class="small text-muted">| Phone: <strong>{{ current_user.phone_number }}</strong></span>
+                {% endif %}
+              </div>
+
+              <button class="btn cyber-btn w-100 mt-3" type="button" id="checkBreachBtn" onclick="refreshBreachCheck()">
+                <i class="fa-solid fa-rotate me-2"></i> Check for Breaches
+              </button>
+            </div>
+
+            <!-- Cookie Risk Form -->
+            <form method="post" action="{{ url_for('modules.cookie_module') }}" id="cookieForm">
+              <div class="mb-4">
+                <label class="form-label">Do you allow tracking cookies?</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="tracking_cookies" id="trackingCookies" />
+                  <label class="form-check-label" for="trackingCookies">Yes</label>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">Does the site request cross-site cookies?</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="cross_site" id="crossSite" />
+                  <label class="form-check-label" for="crossSite">Yes</label>
+                </div>
+              </div>
+
+              <button class="btn cyber-btn w-100" type="submit">
+                <i class="fa-solid fa-magnifying-glass me-2"></i> Run Cookie Scan
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RIGHT: RESULTS ===== -->
+      <div class="col-lg-6 d-flex">
+        <div class="result-grid w-100">
+          <div class="result-card">
+            <h4 class="fw-bold mb-0">
+              <i class="fa-solid fa-chart-simple me-2" style="color:var(--neon)"></i> Results
+            </h4>
+          </div>
+
+          <!-- ===== BREACH CHECK RESULTS ===== -->
+          {% if breach_results %}
+          <div class="grid-card" id="breachResultsCard">
+            <div class="card-title">
+              <i class="fa-solid fa-shield-halved me-1" style="color:var(--neon)"></i>
+              Data Breach Check Results
+              <span class="small text-muted ms-2" id="breachTimestamp">{{ breach_results.check_timestamp }}</span>
+            </div>
+
+            <!-- Breach Status -->
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="fs-1">
+                {% if breach_results.risk_level == 'Critical' %}
+                  &#128308;
+                {% elif breach_results.risk_level == 'Warning' %}
+                  &#9888;&#65039;
+                {% else %}
+                  &#9989;
+                {% endif %}
+              </div>
+              <div>
+                <span class="status-dot
+                  {% if breach_results.risk_level == 'Critical' %}high
+                  {% elif breach_results.risk_level == 'Warning' %}medium
+                  {% else %}low{% endif %}"></span>
+                <span class="badge border-1 p-2
+                  {% if breach_results.risk_level == 'Critical' %}badge-danger
+                  {% elif breach_results.risk_level == 'Warning' %}badge-warn
+                  {% else %}badge-safe{% endif %}">
+                  {{ breach_results.risk_level }}
+                </span>
+                <div class="small text-muted mt-1">
+                  {{ breach_results.breach_count }} breach(es) found
+                  {% if breach_results.email_breached %} | Email: Affected{% endif %}
+                  {% if breach_results.phone_breached %} | Phone: Affected{% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Breach Details -->
+            {% if breach_results.breaches %}
+            <div class="mb-3">
+              <div class="fw-semibold small mb-2">Breach Details:</div>
+              {% for breach in breach_results.breaches %}
+              <div class="p-2 mb-2 rounded-3" style="background:rgba(255,77,109,0.08); border:1px solid rgba(255,77,109,0.2);">
+                <div class="d-flex justify-content-between">
+                  <strong style="color:var(--danger);">{{ breach.name }}</strong>
+                  <span class="small text-muted">{{ breach.date }}</span>
+                </div>
+                <div class="small text-muted">{{ breach.description }}</div>
+                <div class="small mt-1">
+                  <span class="text-muted">Data exposed: </span>
+                  {% for dc in breach.data_classes %}
+                    <span class="badge bg-danger bg-opacity-25 text-light me-1">{{ dc }}</span>
+                  {% endfor %}
+                </div>
+                <div class="small mt-1">
+                  <span class="text-muted">Your compromised data: </span>
+                  {% for cd in breach.compromised_data %}
+                    <span class="badge bg-warning bg-opacity-25 text-light me-1">{{ cd }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Recommendations -->
+            {% if breach_results.recommendations %}
+            <div>
+              <div class="fw-semibold small mb-2">Security Recommendations:</div>
+              <ul class="small mb-0" style="color:var(--muted);">
+                {% for rec in breach_results.recommendations %}
+                <li><i class="fa-solid fa-shield me-1" style="color:var(--neon);"></i> {{ rec }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <!-- ===== COOKIE RISK RESULTS ===== -->
+          {% if risk %}
+            <div class="grid-card">
+              <div class="card-title">
+                <i class="fa-solid fa-cookie-bite me-1" style="color:var(--neon)"></i>
+                Cookie Risk Assessment
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="fs-1">
+                  {% if risk == 'High Risk' %}&#128683;
+                  {% elif risk == 'Warning' %}&#9888;&#65039;
+                  {% else %}&#9989;{% endif %}
+                </div>
+                <div>
+                  <span class="status-dot
+                    {% if risk == 'High Risk' %}high
+                    {% elif risk == 'Warning' %}medium
+                    {% else %}low{% endif %}"></span>
+                  <span class="badge border-1 p-2
+                    {% if risk == 'High Risk' %}badge-danger
+                    {% elif risk == 'Warning' %}badge-warn
+                    {% else %}badge-safe{% endif %}">
+                    {{ risk }}
+                  </span>
+                </div>
+              </div>
+
+              {% if recommendations %}
+              <div class="mt-3">
+                <div class="card-title small">Recommendations</div>
+                <ul class="small mb-0">
+                  {% for r in recommendations %}
+                    <li><i class="fa-solid fa-shield me-1" style="color:var(--neon);"></i> {{ r }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+            </div>
+          {% elif not breach_results %}
+            <div class="grid-card">
+              <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
+                <i class="fa-solid fa-cookie-bite" style="font-size:3rem; color:rgba(39,215,255,0.2); margin-bottom:1rem;"></i>
+                <div class="text-muted">Run a cookie scan or breach check to see results here.</div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function refreshBreachCheck() {
+  const btn = document.getElementById('checkBreachBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Checking...';
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '{{ url_for("modules.cookie_module") }}';
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'check_breach';
+  input.value = '1';
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+}
+
+// Re-enable button if breach results are present (page reload after check)
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('checkBreachBtn');
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-rotate me-2"></i> Check for Breaches';
+  }
+});
+</script>
+{% endblock %}
+

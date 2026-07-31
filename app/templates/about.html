@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}About Us - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <h2 class="fw-bold">CyberShield Overview</h2>
+  <p class="text-muted mt-2">
+    CyberShield is built to support cybersecurity awareness and user protection.
+  </p>
+
+  <div class="row g-3 mt-2">
+    <div class="col-md-6">
+      <div class="cyber-card p-4" data-aos="zoom-in">
+        <h5 class="fw-bold"><i class="fa-solid fa-bullseye me-2" style="color:var(--neon)"></i> Purpose of the project</h5>
+        <p class="text-muted">Make accessible security protection and guidance for everyone.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="cyber-card p-4" data-aos="zoom-in" data-aos-delay="100">
+        <h5 class="fw-bold"><i class="fa-solid fa-brain me-2" style="color:var(--neon)"></i> Cybersecurity awareness</h5>
+        <p class="text-muted">Educate users on practical risks and safer online behaviors.</p>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="cyber-card p-4 mt-0" data-aos="zoom-in" data-aos-delay="180">
+        <h5 class="fw-bold"><i class="fa-solid fa-user-shield me-2" style="color:var(--neon)"></i> User protection</h5>
+        <p class="text-muted">
+          Scan inputs, get risk levels, and follow recommendations that reduce exposure to modern cyber threats.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-4" data-aos="fade-up">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="cyber-card p-4">
+        <h4 class="fw-bold">Mission</h4>
+        <p class="text-muted">“To provide accessible cybersecurity protection and awareness tools for everyone.”</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="cyber-card p-4" data-aos="fade-left">
+        <h4 class="fw-bold">Vision</h4>
+        <p class="text-muted">“Creating a safer digital ecosystem.”</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

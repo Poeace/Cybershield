@@ -1,0 +1,890 @@
+{% extends 'base.html' %}
+{% block title %}Ransomware Simulator - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="container-fluid fullpage-grid px-4">
+    <div class="row g-4">
+      <!-- ===== LEFT COLUMN: 3-STEP WORKFLOW ===== -->
+      <div class="col-lg-7 d-flex flex-column gap-4">
+
+        <!-- Step 1: Upload & Encrypt -->
+        <div class="analyze-grid w-100">
+          <div class="cyber-card p-4 w-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="step-badge">1</div>
+              <div>
+                <h3 class="fw-bold mb-0"><i class="fa-solid fa-cloud-upload-alt me-2" style="color:var(--danger)"></i> Upload &amp; Encrypt</h3>
+                <p class="text-muted small mb-0">Upload a file to create a backup and encrypt it using Fernet AES-128</p>
+              </div>
+            </div>
+
+            <form id="encryptForm" enctype="multipart/form-data">
+              <div class="mb-4">
+                <label class="form-label">Select File to Encrypt</label>
+                <div class="upload-zone" id="encryptDropZone">
+                  <i class="fa-solid fa-file-shield" style="font-size: 2.5rem; color: rgba(255,77,109,0.4);"></i>
+                  <p class="mt-2 mb-1"><strong>Click to browse</strong> or drag &amp; drop</p>
+                  <p class="text-muted small">Any file type accepted</p>
+                  <input type="file" name="file" id="encryptFileInput" class="file-input" required>
+                </div>
+                <div id="encryptFileInfo" class="file-info d-none mt-2">
+                  <i class="fa-solid fa-file me-2"></i>
+                  <span id="encryptFileName"></span>
+                </div>
+              </div>
+
+              <div id="encryptProgress" class="scan-progress d-none mb-3">
+                <div class="scan-line">
+                  <div class="scan-line-inner"></div>
+                </div>
+                <div class="scan-status mt-2 text-center">
+                  <i class="fa-solid fa-spinner fa-spin me-2"></i>
+                  <span id="encryptStatusText">Encrypting file...</span>
+                </div>
+              </div>
+
+              <button class="btn w-100" type="submit" id="encryptBtn" style="background: linear-gradient(90deg, rgba(255,77,109,0.8), rgba(200,50,80,0.8)); border: none; color: #fff;">
+                <i class="fa-solid fa-lock me-2"></i> Encrypt File <i class="fa-solid fa-skull ms-2"></i>
+              </button>
+            </form>
+
+            <div id="encryptResult" class="mt-3"></div>
+
+            <!-- Encryption Key Display -->
+            <div id="keyDisplay" class="d-none mt-3">
+              <div class="alert alert-warning py-3 px-3" role="alert" style="border-left: 4px solid var(--warn);">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="fa-solid fa-key mt-1" style="font-size: 1.5rem; color: var(--warn);"></i>
+                  <div class="w-100">
+                    <strong class="text-warning">⚠️ YOUR ENCRYPTION KEY — SAVE THIS!</strong>
+                    <p class="small mb-2 text-muted">This key is required to decrypt your file. Without it, the file cannot be recovered.</p>
+                    <div class="input-group">
+                      <input type="text" id="encryptionKeyInput" class="form-control font-monospace" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,193,7,0.3); color: #fff; font-size: 0.8rem;" readonly>
+                      <button class="btn btn-outline-warning" type="button" id="copyKeyBtn" style="border-color: rgba(255,193,7,0.3);">
+                        <i class="fa-solid fa-copy"></i>
+                      </button>
+                    </div>
+                    <div id="keyCopiedMsg" class="small text-success mt-1 d-none"><i class="fa-solid fa-check-circle me-1"></i> Key copied to clipboard!</div>
+                  </div>
+                </div>
+              </div>
+              <div class="small text-muted text-center">
+                <i class="fa-solid fa-database me-1"></i> Backup stored in your personal folder: <code id="backupFolderPath" class="text-info"></code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Decrypt with Key -->
+        <div class="analyze-grid w-100">
+          <div class="cyber-card p-4 w-100" style="border-color: rgba(46,229,157,0.3);">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="step-badge" style="background: var(--safe);">2</div>
+              <div>
+                <h3 class="fw-bold mb-0"><i class="fa-solid fa-unlock-keyhole me-2" style="color:var(--safe)"></i> Decrypt with Key</h3>
+                <p class="text-muted small mb-0">Paste your encryption key to decrypt the .locked file and restore it</p>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Select Encrypted File (from list below)</label>
+              <div id="encryptedFilesList" class="mb-3" style="max-height: 180px; overflow-y: auto;">
+                <p class="text-muted small"><i class="fa-solid fa-spinner fa-spin me-1"></i> Loading encrypted files...</p>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="decryptKeyInput">Enter Encryption Key</label>
+              <input type="text" id="decryptKeyInput" class="form-control font-monospace" placeholder="Paste your encryption key here..." style="background: rgba(0,0,0,0.3); border: 1px solid rgba(46,229,157,0.3); color: #fff;">
+            </div>
+
+            <div id="decryptProgress" class="scan-progress d-none mb-3">
+              <div class="scan-line">
+                <div class="scan-line-inner"></div>
+              </div>
+              <div class="scan-status mt-2 text-center">
+                <i class="fa-solid fa-spinner fa-spin me-2"></i>
+                <span id="decryptStatusText">Decrypting file...</span>
+              </div>
+            </div>
+
+            <button class="btn cyber-btn w-100" id="decryptBtn" disabled>
+              <i class="fa-solid fa-unlock-keyhole me-2"></i> Decrypt &amp; Restore File
+            </button>
+
+            <div id="decryptResult" class="mt-3"></div>
+          </div>
+        </div>
+
+        <!-- Step 3: Download -->
+        <div class="analyze-grid w-100">
+          <div class="cyber-card p-4 w-100" style="border-color: rgba(39,215,255,0.3);">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="step-badge" style="background: var(--neon);">3</div>
+              <div>
+                <h3 class="fw-bold mb-0"><i class="fa-solid fa-download me-2" style="color:var(--neon)"></i> Download Decrypted File</h3>
+                <p class="text-muted small mb-0">Download your restored file after successful decryption</p>
+              </div>
+            </div>
+
+            <div id="restoredFilesSection" class="d-none">
+              <div class="mb-3">
+                <label class="form-label">Restored Files Ready for Download</label>
+                <div id="restoredFilesList" class="mb-2" style="max-height: 200px; overflow-y: auto;"></div>
+              </div>
+
+              <div id="downloadResult" class="mt-2"></div>
+            </div>
+
+            <div id="noRestoredFiles" class="">
+              <p class="text-muted small mb-0 text-center py-3">
+                <i class="fa-solid fa-circle-info me-1"></i>
+                No decrypted files yet. Complete Step 2 to decrypt a file first.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RIGHT COLUMN: DASHBOARD & HISTORY ===== -->
+      <div class="col-lg-5 d-flex flex-column gap-4">
+        <div class="result-grid w-100">
+
+          <!-- Stats Cards -->
+          <div class="result-card">
+            <h4 class="fw-bold mb-0"><i class="fa-solid fa-shield me-2" style="color:var(--neon)"></i> Ransomware Dashboard</h4>
+          </div>
+
+<div class="row g-2 mb-3">
+            <div class="col-4">
+              <div class="stat-card text-center p-2">
+                <div class="stat-value" style="font-size:1.4rem; color:var(--neon);" id="statTotal">0</div>
+                <div class="stat-label" style="font-size:0.7rem;">Total Files</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="stat-card text-center p-2">
+                <div class="stat-value" style="font-size:1.4rem; color:var(--warn);" id="statEncrypted">0</div>
+                <div class="stat-label" style="font-size:0.7rem;">Encrypted</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="stat-card text-center p-2">
+                <div class="stat-value" style="font-size:1.4rem; color:var(--safe);" id="statRestored">0</div>
+                <div class="stat-label" style="font-size:0.7rem;">Restored</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== ENCRYPT / DECRYPT STEP-BY-STEP GUIDE ===== -->
+          <div class="grid-card" style="border-color: rgba(39,215,255,0.12);">
+            <div class="card-title"><i class="fa-solid fa-book-open me-1"></i> How to Encrypt &amp; Decrypt</div>
+
+            <!-- Encryption Guide -->
+            <div class="mb-3">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="d-inline-flex align-items-center justify-content-center" style="width:24px;height:24px;border-radius:50%;background:var(--danger);color:#fff;font-size:0.7rem;font-weight:800;flex-shrink:0;">1</span>
+                <span style="color:var(--danger);font-weight:700;font-size:0.85rem;">
+                  <i class="fa-solid fa-lock me-1"></i> Encryption — Lock Your File
+                </span>
+              </div>
+              <div style="font-size:0.82rem;color:rgba(233,242,255,0.8);line-height:1.7;padding-left:34px;">
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--danger);font-weight:700;min-width:16px;">1.</span>
+                  <span>Upload any file using the <strong>Upload &amp; Encrypt</strong> form on the left</span>
+                </div>
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--danger);font-weight:700;min-width:16px;">2.</span>
+                  <span>A backup is created in your personal folder then <strong>Fernet AES-128</strong> encryption is applied</span>
+                </div>
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--danger);font-weight:700;min-width:16px;">3.</span>
+                  <span>A unique <strong>encryption key</strong> is generated — this is your only way to recover the file</span>
+                </div>
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--danger);font-weight:700;min-width:16px;">4.</span>
+                  <span>The original file is removed (simulating real ransomware behavior)</span>
+                </div>
+                <div class="d-flex gap-2">
+                  <span style="color:var(--danger);font-weight:700;min-width:16px;">5.</span>
+                  <span>The key is <strong>also emailed</strong> to your registered email for backup</span>
+                </div>
+              </div>
+            </div>
+
+            <hr style="border-color:rgba(39,215,255,0.08);margin:0.75rem 0;">
+
+            <!-- Decryption Guide -->
+            <div class="mb-3">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="d-inline-flex align-items-center justify-content-center" style="width:24px;height:24px;border-radius:50%;background:var(--safe);color:#fff;font-size:0.7rem;font-weight:800;flex-shrink:0;">2</span>
+                <span style="color:var(--safe);font-weight:700;font-size:0.85rem;">
+                  <i class="fa-solid fa-unlock-keyhole me-1"></i> Decryption — Unlock &amp; Restore
+                </span>
+              </div>
+              <div style="font-size:0.82rem;color:rgba(233,242,255,0.8);line-height:1.7;padding-left:34px;">
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--safe);font-weight:700;min-width:16px;">1.</span>
+                  <span>Select the encrypted <code>.locked</code> file from the list under <strong>Decrypt with Key</strong></span>
+                </div>
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--safe);font-weight:700;min-width:16px;">2.</span>
+                  <span>Paste or type the encryption key you saved when you encrypted the file</span>
+                </div>
+                <div class="d-flex gap-2 mb-1">
+                  <span style="color:var(--safe);font-weight:700;min-width:16px;">3.</span>
+                  <span>The system verifies the key and decrypts using <strong>Fernet AES-128</strong></span>
+                </div>
+                <div class="d-flex gap-2">
+                  <span style="color:var(--safe);font-weight:700;min-width:16px;">4.</span>
+                  <span>Your original file is restored — download it from the <strong>Download Decrypted File</strong> section</span>
+                </div>
+              </div>
+            </div>
+
+            <hr style="border-color:rgba(39,215,255,0.08);margin:0.75rem 0;">
+
+            <!-- Critical Warning -->
+            <div class="d-flex align-items-start gap-2 p-2" style="background:rgba(255,77,109,0.08);border-radius:8px;border-left:3px solid var(--danger);">
+              <i class="fa-solid fa-triangle-exclamation mt-1" style="color:var(--danger);font-size:0.9rem;flex-shrink:0;"></i>
+              <div style="font-size:0.78rem;color:rgba(233,242,255,0.75);">
+                <strong style="color:var(--danger);">⚠️ Critical:</strong> Without the encryption key, your file <strong>cannot</strong> be decrypted — it will be permanently lost. Always <strong>save the key immediately</strong> after encryption. The key is also sent to your registered email as a backup.
+              </div>
+            </div>
+
+            <!-- Tip -->
+            <div class="d-flex align-items-start gap-2 mt-2 p-2" style="background:rgba(39,215,255,0.06);border-radius:8px;border-left:3px solid var(--neon);">
+              <i class="fa-solid fa-lightbulb mt-1" style="color:var(--neon);font-size:0.9rem;flex-shrink:0;"></i>
+              <div style="font-size:0.78rem;color:rgba(233,242,255,0.75);">
+                <strong style="color:var(--neon);">💡 Educational Purpose:</strong> This module simulates ransomware behavior for <strong>cybersecurity awareness training</strong>. It demonstrates how ransomware encrypts files and why regular backups are essential for recovery.
+              </div>
+            </div>
+          </div>
+
+          <!-- Workflow Timeline -->
+          <div class="grid-card" id="timelineCard">
+            <div class="card-title"><i class="fa-solid fa-timeline me-1"></i> Encryption Workflow</div>
+            <div class="timeline">
+              <div class="timeline-item" id="tlEncrypt">
+                <div class="timeline-dot" style="background: var(--danger);"></div>
+                <div class="timeline-content">File Encrypted</div>
+                <span class="timeline-status" id="tlEncryptStatus"></span>
+              </div>
+              <div class="timeline-arrow">↓</div>
+              <div class="timeline-item" id="tlDecrypt">
+                <div class="timeline-dot" style="background: var(--safe);"></div>
+                <div class="timeline-content">File Decrypted</div>
+                <span class="timeline-status" id="tlDecryptStatus"></span>
+              </div>
+              <div class="timeline-arrow">↓</div>
+              <div class="timeline-item" id="tlDownload">
+                <div class="timeline-dot" style="background: var(--neon);"></div>
+                <div class="timeline-content">File Downloaded</div>
+                <span class="timeline-status" id="tlDownloadStatus"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Encrypted Files History -->
+          <div class="grid-card" id="historyCard">
+            <div class="card-title"><i class="fa-solid fa-clock-rotate-left me-1"></i> Encrypted Files History</div>
+            <div id="historyFilesList" style="max-height: 250px; overflow-y: auto;">
+              <p class="text-muted small"><i class="fa-solid fa-spinner fa-spin me-1"></i> Loading history...</p>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="grid-card" style="border-color: rgba(255,77,109,0.2);">
+            <div class="card-title" style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation me-1"></i> Danger Zone</div>
+            <p class="small text-muted">Securely delete encrypted files and their backups. This action cannot be undone.</p>
+            <div id="dangerFilesList" style="max-height: 150px; overflow-y: auto; margin-bottom: 10px;">
+              <p class="text-muted small"><i class="fa-solid fa-spinner fa-spin me-1"></i> Loading files...</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Step badges */
+.step-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 15px rgba(255,77,109,0.3);
+}
+
+/* Timeline styles */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+}
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+}
+.timeline-item.active {
+  opacity: 1;
+}
+.timeline-item.completed {
+  opacity: 1;
+}
+.timeline-item.completed .timeline-dot {
+  box-shadow: 0 0 12px currentColor;
+}
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.timeline-content {
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex-grow: 1;
+}
+.timeline-status {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.timeline-arrow {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1;
+}
+/* File item styles */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid transparent;
+}
+.file-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+.file-item.selected {
+  border-color: var(--safe);
+  background: rgba(46,229,157,0.08);
+}
+.file-item .file-name {
+  flex-grow: 1;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-item .file-date {
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+/* Decrypted file card */
+.restored-file-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(46,229,157,0.08);
+  border: 1px solid rgba(46,229,157,0.2);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.restored-file-card .file-icon {
+  font-size: 1.5rem;
+  color: var(--safe);
+}
+.restored-file-card .file-details {
+  flex-grow: 1;
+}
+.restored-file-card .file-details .name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.restored-file-card .file-details .size {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ===== STATE =====
+  let selectedBackupId = null;
+  let currentBackupFile = null;
+
+  // ===== LOAD STATS =====
+  function loadStats() {
+    fetch('/api/ransomware/stats')
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('statTotal').textContent = d.total_files || 0;
+        document.getElementById('statEncrypted').textContent = d.encrypted_files || 0;
+        document.getElementById('statRestored').textContent = d.restored_files || 0;
+      })
+      .catch(() => {});
+  }
+  loadStats();
+
+  // ===== LOAD ENCRYPTED FILES =====
+  function loadEncryptedFiles() {
+    fetch('/api/ransomware/list-encrypted')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.success) {
+          document.getElementById('encryptedFilesList').innerHTML = `<p class="text-danger small">${d.error}</p>`;
+          return;
+        }
+
+        const files = d.files || [];
+        const list = document.getElementById('encryptedFilesList');
+
+        if (files.length === 0) {
+          list.innerHTML = '<p class="text-muted small"><i class="fa-solid fa-info-circle me-1"></i> No encrypted files found. Upload a file in Step 1 to get started.</p>';
+          document.getElementById('decryptBtn').disabled = true;
+          return;
+        }
+
+        let html = '';
+        files.forEach(f => {
+          const dateStr = f.backup_date || '';
+          html += `
+            <div class="file-item" data-id="${f.id}" data-name="${f.file_name}" onclick="selectEncryptedFile(${f.id}, '${f.file_name.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-file-lock" style="color:var(--warn); font-size:0.9rem;"></i>
+              <span class="file-name">${f.original_name}</span>
+              <span class="file-date">${dateStr}</span>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+        document.getElementById('decryptBtn').disabled = true;
+      })
+      .catch(() => {
+        document.getElementById('encryptedFilesList').innerHTML = '<p class="text-danger small">Failed to load encrypted files.</p>';
+      });
+  }
+  loadEncryptedFiles();
+
+  // Select encrypted file
+  window.selectEncryptedFile = function(id, name) {
+    selectedBackupId = id;
+    currentBackupFile = name;
+
+    // Update visual selection
+    document.querySelectorAll('#encryptedFilesList .file-item').forEach(el => {
+      el.classList.remove('selected');
+    });
+    const selectedEl = document.querySelector(`#encryptedFilesList .file-item[data-id="${id}"]`);
+    if (selectedEl) selectedEl.classList.add('selected');
+
+    document.getElementById('decryptBtn').disabled = false;
+
+    // Update decrypt section heading
+    const label = document.querySelector('#decryptKeyInput').previousElementSibling;
+    if (label) label.textContent = `Enter Encryption Key for "${name.replace('.locked', '')}"`;
+  };
+
+  // ===== LOAD HISTORY =====
+  function loadHistory() {
+    fetch('/api/ransomware/list-encrypted')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.success) return;
+        const files = d.files || [];
+        const list = document.getElementById('historyFilesList');
+
+        if (files.length === 0) {
+          list.innerHTML = '<p class="text-muted small"><i class="fa-solid fa-info-circle me-1"></i> No activity yet.</p>';
+          return;
+        }
+
+        let html = '';
+        files.forEach(f => {
+          const statusBadge = f.status === 'encrypted'
+            ? '<span class="badge bg-warning text-dark" style="font-size:0.65rem;">Encrypted</span>'
+            : '<span class="badge bg-success" style="font-size:0.65rem;">Restored</span>';
+          html += `
+            <div class="d-flex align-items-center gap-2 mb-1 p-1" style="background:rgba(255,255,255,0.03); border-radius:6px;">
+              <i class="fa-solid ${f.status === 'encrypted' ? 'fa-file-lock' : 'fa-file-circle-check'}" style="color:${f.status === 'encrypted' ? 'var(--warn)' : 'var(--safe)'}; font-size:0.8rem;"></i>
+              <span class="small flex-grow-1">${f.original_name}</span>
+              ${statusBadge}
+              <span class="small text-muted" style="font-size:0.7rem;">${f.backup_date}</span>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+      })
+      .catch(() => {});
+  }
+  loadHistory();
+
+  // ===== LOAD DANGER FILES =====
+  function loadDangerFiles() {
+    fetch('/api/ransomware/list-encrypted')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.success) return;
+        const files = d.files || [];
+        const list = document.getElementById('dangerFilesList');
+
+        if (files.length === 0) {
+          list.innerHTML = '<p class="text-muted small"><i class="fa-solid fa-info-circle me-1"></i> No files to manage.</p>';
+          return;
+        }
+
+        let html = '';
+        files.forEach(f => {
+          html += `
+            <div class="d-flex align-items-center gap-2 mb-1 p-1" style="background:rgba(255,77,109,0.05); border-radius:6px;">
+              <span class="small flex-grow-1">${f.original_name}</span>
+              <button class="btn btn-sm delete-file-btn" data-id="${f.id}" style="background:rgba(255,77,109,0.2); color:var(--danger); border:1px solid rgba(255,77,109,0.3);">
+                <i class="fa-solid fa-trash-can me-1"></i> Delete
+              </button>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+
+        // Attach delete handlers
+        document.querySelectorAll('.delete-file-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            if (confirm('Are you sure you want to permanently delete this encrypted file? This action cannot be undone.')) {
+              deleteEncryptedFile(id);
+            }
+          });
+        });
+      })
+      .catch(() => {});
+  }
+  loadDangerFiles();
+
+  function deleteEncryptedFile(id) {
+    fetch('/api/ransomware/delete-encrypted/' + id, { method: 'POST' })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          loadStats();
+          loadEncryptedFiles();
+          loadHistory();
+          loadDangerFiles();
+        } else {
+          alert('Error: ' + d.error);
+        }
+      })
+      .catch(err => alert('Error: ' + err.message));
+  }
+
+  // ===== LOAD RESTORED FILES =====
+  function loadRestoredFiles() {
+    fetch('/api/ransomware/list-encrypted')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.success) return;
+        const files = d.files || [];
+        const restored = files.filter(f => f.status === 'restored');
+
+        const section = document.getElementById('restoredFilesSection');
+        const noFiles = document.getElementById('noRestoredFiles');
+        const list = document.getElementById('restoredFilesList');
+
+        if (restored.length === 0) {
+          section.classList.add('d-none');
+          noFiles.classList.remove('d-none');
+          return;
+        }
+
+        section.classList.remove('d-none');
+        noFiles.classList.add('d-none');
+
+        let html = '';
+        restored.forEach(f => {
+          const downloadUrl = '/api/ransomware/download/' + f.id;
+          html += `
+            <div class="restored-file-card">
+              <div class="file-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+              <div class="file-details">
+                <div class="name">${f.original_name}</div>
+                <div class="size">${f.file_size ? (f.file_size / 1024).toFixed(1) + ' KB' : 'Unknown size'} · ${f.backup_date}</div>
+              </div>
+              <a href="${downloadUrl}" class="btn btn-sm" style="background:rgba(39,215,255,0.15); color:var(--neon); border:1px solid rgba(39,215,255,0.3); text-decoration:none;" download>
+                <i class="fa-solid fa-download me-1"></i> Download
+              </a>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+      })
+      .catch(() => {});
+  }
+  loadRestoredFiles();
+
+  // ===== STEP 1: UPLOAD & ENCRYPT =====
+  const encryptInput = document.getElementById('encryptFileInput');
+  const encryptDropZone = document.getElementById('encryptDropZone');
+  const encryptFileInfo = document.getElementById('encryptFileInfo');
+  const encryptFileName = document.getElementById('encryptFileName');
+
+  encryptDropZone.addEventListener('click', () => encryptInput.click());
+  encryptDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    encryptDropZone.style.borderColor = 'var(--danger)';
+    encryptDropZone.style.background = 'rgba(255,77,109,0.08)';
+  });
+  encryptDropZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    encryptDropZone.style.borderColor = 'rgba(255,77,109,0.25)';
+    encryptDropZone.style.background = 'transparent';
+  });
+  encryptDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    encryptDropZone.style.borderColor = 'rgba(255,77,109,0.25)';
+    encryptDropZone.style.background = 'transparent';
+    if (e.dataTransfer.files.length > 0) {
+      encryptInput.files = e.dataTransfer.files;
+      updateEncryptInfo(e.dataTransfer.files[0]);
+    }
+  });
+  encryptInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) updateEncryptInfo(e.target.files[0]);
+  });
+
+  function updateEncryptInfo(file) {
+    encryptFileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+    encryptFileInfo.classList.remove('d-none');
+  }
+
+  document.getElementById('encryptForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const file = encryptInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const progress = document.getElementById('encryptProgress');
+    const btn = document.getElementById('encryptBtn');
+    const statusText = document.getElementById('encryptStatusText');
+    const resultDiv = document.getElementById('encryptResult');
+    const keyDisplay = document.getElementById('keyDisplay');
+
+    progress.classList.remove('d-none');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Encrypting...';
+    statusText.textContent = 'Creating backup and encrypting file...';
+    keyDisplay.classList.add('d-none');
+    resultDiv.innerHTML = '';
+
+    fetch('/api/ransomware/upload-and-encrypt', { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(d => {
+        progress.classList.add('d-none');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Encrypt File <i class="fa-solid fa-skull ms-2"></i>';
+
+        if (d.success) {
+          // Show encryption key
+          document.getElementById('encryptionKeyInput').value = d.encryption_key;
+          document.getElementById('backupFolderPath').textContent = 'backups/user_' + d.backup_id;
+          keyDisplay.classList.remove('d-none');
+
+          // Store selected backup ID for easy decryption
+          selectedBackupId = d.backup_id;
+          currentBackupFile = d.encrypted_name;
+
+          // Enable decrypt button if key input has content
+          document.getElementById('decryptBtn').disabled = false;
+          document.getElementById('decryptKeyInput').value = d.encryption_key;
+
+          // Auto-select this file in the decrypt list
+          const fileItems = document.querySelectorAll('#encryptedFilesList .file-item');
+          fileItems.forEach(el => {
+            el.classList.remove('selected');
+            if (parseInt(el.dataset.id) === d.backup_id) {
+              el.classList.add('selected');
+            }
+          });
+
+          // Show email notification if key was emailed
+          let emailNotice = '';
+          if (d.key_emailed) {
+            emailNotice = `
+              <div class="alert alert-info py-2 px-3 mt-2" role="alert" style="border-left: 4px solid var(--neon);">
+                <i class="fa-solid fa-envelope me-2"></i>
+                <strong>Encryption key sent to your email!</strong><br>
+                <span class="small">Check your registered email inbox for the encryption key.</span>
+              </div>
+            `;
+          }
+
+          resultDiv.innerHTML = `
+            <div class="alert alert-danger py-2 px-3" role="alert" style="border-left: 4px solid var(--danger);">
+              <i class="fa-solid fa-skull me-2"></i>
+              <strong>File Encrypted Successfully!</strong><br>
+              <span class="small">${d.file_name} → ${d.encrypted_name}</span>
+            </div>
+            ${emailNotice}
+          `;
+
+          // Update timeline
+          document.getElementById('tlEncrypt').classList.add('completed');
+          document.getElementById('tlEncrypt').classList.add('active');
+          document.getElementById('tlEncryptStatus').textContent = '✓ Done';
+          document.getElementById('tlDecrypt').classList.add('active');
+
+          // Refresh all lists
+          loadStats();
+          loadEncryptedFiles();
+          loadHistory();
+          loadDangerFiles();
+        } else {
+          resultDiv.innerHTML = `<div class="alert alert-danger py-2 px-3 small">${d.error || 'Encryption failed.'}</div>`;
+        }
+      })
+      .catch(err => {
+        progress.classList.add('d-none');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Encrypt File <i class="fa-solid fa-skull ms-2"></i>';
+        resultDiv.innerHTML = `<div class="alert alert-danger py-2 px-3 small">Network error: ${err.message}</div>`;
+      });
+  });
+
+  // Copy key button
+  document.getElementById('copyKeyBtn').addEventListener('click', function() {
+    const keyInput = document.getElementById('encryptionKeyInput');
+    keyInput.select();
+    navigator.clipboard.writeText(keyInput.value).then(() => {
+      const msg = document.getElementById('keyCopiedMsg');
+      msg.classList.remove('d-none');
+      setTimeout(() => msg.classList.add('d-none'), 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      document.execCommand('copy');
+    });
+  });
+
+  // ===== STEP 2: DECRYPT WITH KEY =====
+  document.getElementById('decryptBtn').addEventListener('click', function() {
+    const key = document.getElementById('decryptKeyInput').value.trim();
+    if (!selectedBackupId) {
+      document.getElementById('decryptResult').innerHTML = `
+        <div class="alert alert-warning py-2 px-3 small" role="alert">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i> Please select an encrypted file from the list above.
+        </div>
+      `;
+      return;
+    }
+    if (!key) {
+      document.getElementById('decryptResult').innerHTML = `
+        <div class="alert alert-warning py-2 px-3 small" role="alert">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i> Please enter the encryption key. It was shown when you encrypted the file.
+        </div>
+      `;
+      return;
+    }
+
+    const progress = document.getElementById('decryptProgress');
+    const btn = this;
+    const statusText = document.getElementById('decryptStatusText');
+    const resultDiv = document.getElementById('decryptResult');
+
+    progress.classList.remove('d-none');
+    btn.disabled = true;
+    statusText.textContent = 'Verifying key and decrypting file...';
+    resultDiv.innerHTML = '';
+
+    fetch('/api/ransomware/decrypt-with-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        backup_id: selectedBackupId,
+        encryption_key: key
+      })
+    })
+    .then(r => r.json())
+    .then(d => {
+      progress.classList.add('d-none');
+      btn.disabled = false;
+
+      if (d.success) {
+        resultDiv.innerHTML = `
+          <div class="alert alert-success py-2 px-3" role="alert" style="border-left: 4px solid var(--safe);">
+            <i class="fa-solid fa-check-circle me-2"></i>
+            <strong>File Decrypted Successfully!</strong><br>
+            <span class="small">${d.file_name} (${(d.decrypted_size / 1024).toFixed(1)} KB)</span>
+          </div>
+        `;
+
+        // Update timeline
+        document.getElementById('tlDecrypt').classList.add('completed');
+        document.getElementById('tlDecryptStatus').textContent = '✓ Done';
+        document.getElementById('tlDownload').classList.add('active');
+
+        // Refresh lists
+        loadStats();
+        loadRestoredFiles();
+        loadHistory();
+      } else {
+        resultDiv.innerHTML = `
+          <div class="alert alert-danger py-2 px-3 small" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-1"></i> ${d.error || 'Decryption failed.'}
+          </div>
+        `;
+      }
+    })
+    .catch(err => {
+      progress.classList.add('d-none');
+      btn.disabled = false;
+      resultDiv.innerHTML = `<div class="alert alert-danger py-2 px-3 small">Network error: ${err.message}</div>`;
+    });
+  });
+
+  // ===== AUTO-FILL KEY FROM CLIPBOARD =====
+  document.getElementById('decryptKeyInput').addEventListener('paste', function() {
+    setTimeout(() => {
+      if (this.value.trim()) {
+        // Enable decrypt button if a file is also selected
+        if (selectedBackupId) {
+          document.getElementById('decryptBtn').disabled = false;
+        }
+      }
+    }, 100);
+  });
+
+  // ===== REFRESH INTERVAL =====
+  // Refresh restored files and stats every 10 seconds
+  setInterval(() => {
+    loadStats();
+    loadRestoredFiles();
+  }, 10000);
+
+  // Initial load
+  loadRestoredFiles();
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}CyberShield - Home{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <div class="neon-pill glow mb-3">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span class="text-uppercase small">Cybersecurity Awareness & Protection</span>
+      </div>
+      <h1 class="display-5 fw-bold" style="line-height:1.15;">
+        Protecting Users Against Modern Cyber Threats
+      </h1>
+      <p class="text-muted mt-3">
+        CyberShield helps you understand and mitigate common threats through Cookie Protection, UPI Fraud Detection,
+        and Ransomware Detection.
+      </p>
+      <a class="btn cyber-btn btn-lg mt-2" href="{{ url_for('auth.register') }}">
+        Get Started <i class="fa-solid fa-arrow-right ms-2"></i>
+      </a>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="cyber-card p-4 text-center hero-shield-card" data-aos="zoom-in">
+        <img src="{{ url_for('static', filename='images/cybershield-bg.png') }}"
+             alt="CyberShield Protection"
+             class="hero-shield-image" />
+        <h4 class="glow mt-3">Stay Secure. Stay Informed.</h4>
+        <p class="text-muted mt-2">Scan, detect, and get recommendations in seconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-4" data-aos="fade-up">
+  <div class="row g-3">
+    <div class="col-12">
+      <h2 class="fw-bold">Features</h2>
+      <p class="text-muted">Three modules designed to guide real-world protection.</p>
+    </div>
+
+    <div class="col-md-4" data-aos="flip-left" data-aos-delay="50">
+      <div class="cyber-card p-4 h-100">
+        <div class="mb-3">
+          <i class="fa-solid fa-cookie-bite" style="font-size:28px; color: var(--neon);"></i>
+        </div>
+        <h5 class="fw-bold">Cookie Protection</h5>
+        <ul class="text-muted small mt-3">
+          <li>Cookie scanner</li>
+          <li>Browser privacy awareness</li>
+          <li>Cookie risk analysis</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-4" data-aos="flip-left" data-aos-delay="120">
+      <div class="cyber-card p-4 h-100">
+        <div class="mb-3">
+          <i class="fa-solid fa-receipt" style="font-size:28px; color: var(--neon);"></i>
+        </div>
+        <h5 class="fw-bold">UPI Fraud Detection</h5>
+        <ul class="text-muted small mt-3">
+          <li>Fraudulent link detection</li>
+          <li>Suspicious UPI ID analysis</li>
+          <li>Scam warning alerts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-4" data-aos="flip-left" data-aos-delay="190">
+      <div class="cyber-card p-4 h-100">
+        <div class="mb-3">
+          <i class="fa-solid fa-shield" style="font-size:28px; color: var(--neon);"></i>
+        </div>
+        <h5 class="fw-bold">Ransomware Detection</h5>
+        <ul class="text-muted small mt-3">
+          <li>File behavior monitoring</li>
+          <li>Suspicious encryption detection</li>
+          <li>Security recommendations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5" data-aos="fade-up">
+  <div class="row g-3">
+    <div class="col-md-4" >
+      <div class="cyber-card p-4">
+        <div class="small text-muted">Registered Users</div>
+        <div class="display-5 fw-bold" data-counter="0" data-speed="950" data-format="comma" id="stat-registered-users">0</div>
+      </div>
+    </div>
+    <div class="col-md-4" >
+      <div class="cyber-card p-4">
+        <div class="small text-muted">Threats Detected</div>
+        <div class="display-5 fw-bold" data-counter="0" data-speed="900" data-format="comma" id="stat-threats-detected">0</div>
+      </div>
+    </div>
+    <div class="col-md-4" >
+      <div class="cyber-card p-4">
+        <div class="small text-muted">Protected Sessions</div>
+        <div class="display-5 fw-bold" data-counter="0" data-speed="1000" data-format="comma" id="stat-protected-sessions">0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/api/home/stats')
+    .then(res => res.json())
+    .then(data => {
+      const statIds = [
+        { id: 'stat-registered-users', val: data.registered_users },
+        { id: 'stat-threats-detected', val: data.threats_detected },
+        { id: 'stat-protected-sessions', val: data.protected_sessions },
+      ];
+      statIds.forEach(function(item) {
+        const el = document.getElementById(item.id);
+        if (el) {
+          el.setAttribute('data-counter', item.val);
+          // Re-trigger the counter animation from main.js
+          // The existing IntersectionObserver in main.js will pick it up
+        }
+      });
+    })
+    .catch(function(err) {
+      console.warn('Failed to load homepage stats:', err);
+    });
+});
+</script>
+{% endblock %}
+

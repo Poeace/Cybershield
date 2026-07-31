@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <h2 class="fw-bold"><i class="fa-solid fa-gauge-high me-2" style="color:var(--neon)"></i> Admin Dashboard</h2>
+    <a class="btn btn-outline-light" href="{{ url_for('admin.admin_logout') }}">Logout</a>
+  </div>
+
+  <div class="row g-3 mt-1">
+    <div class="col-md-4">
+      <div class="cyber-card p-4">
+        <div class="small text-muted">Total Users</div>
+        <div class="display-5 fw-bold">{{ total_users }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="cyber-card p-4">
+        <div class="small text-muted">Total Logins</div>
+        <div class="display-5 fw-bold">{{ total_logins }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="cyber-card p-4">
+        <div class="small text-muted">Total Messages</div>
+        <div class="display-5 fw-bold">{{ total_messages }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-2">
+    <div class="col-lg-7">
+      <div class="cyber-card p-4">
+        <h4 class="fw-bold">Module Usage</h4>
+        <div class="table-responsive mt-2">
+          <table class="table table-dark table-striped">
+            <thead>
+              <tr><th>Module</th><th>Access Count</th></tr>
+            </thead>
+            <tbody>
+              {% for name, count in module_usage %}
+                <tr><td>{{ name }}</td><td>{{ count }}</td></tr>
+              {% else %}
+                <tr><td colspan="2" class="text-muted">No usage yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="cyber-card p-4">
+        <h4 class="fw-bold">Recent Logins</h4>
+        <div class="mt-2">
+          <ul class="list-group list-group-flush">
+            {% for log in last_login_logs %}
+              <li class="list-group-item" style="background:transparent; border-color: rgba(255,255,255,.08);">
+                <div class="fw-semibold">{{ log.username or 'unknown' }}</div>
+                <div class="text-muted small">{{ log.status }} • {{ log.login_time }}</div>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted" style="background:transparent; border-color: rgba(255,255,255,.08);">No logs yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-2">
+    <div class="col-lg-6">
+      <div class="cyber-card p-4">
+        <h4 class="fw-bold">Latest Users</h4>
+        <div class="mt-2">
+          <ul class="list-group list-group-flush">
+            {% for u in users %}
+              <li class="list-group-item" style="background:transparent; border-color: rgba(255,255,255,.08);">
+                <div class="fw-semibold">{{ u.username }}</div>
+                <div class="text-muted small">{{ u.email }} • {{ u.registration_date }}</div>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted" style="background:transparent; border-color: rgba(255,255,255,.08);">No users yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="cyber-card p-4">
+        <h4 class="fw-bold">Latest Messages</h4>
+        <div class="mt-2">
+          <ul class="list-group list-group-flush">
+            {% for m in messages %}
+              <li class="list-group-item" style="background:transparent; border-color: rgba(255,255,255,.08);">
+                <div class="fw-semibold">{{ m.subject }}</div>
+                <div class="text-muted small">From {{ m.name }} ({{ m.email }}) • {{ m.submitted_at }}</div>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted" style="background:transparent; border-color: rgba(255,255,255,.08);">No messages yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

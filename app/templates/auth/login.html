@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Login - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="cyber-card p-4">
+        <h3 class="fw-bold mb-3"><i class="fa-solid fa-right-to-bracket me-2" style="color:var(--neon)"></i> Sign in</h3>
+
+        <form method="post" action="{{ url_for('auth.login') }}">
+          <div class="mb-3">
+            <label class="form-label">Username or email</label>
+            <input class="form-control" name="username_email" required maxlength="120" />
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" required minlength="6" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Captcha</label>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge bg-dark text-white">{{ captcha_text }}</span>
+              <input class="form-control" name="captcha" required maxlength="10" placeholder="Enter captcha" />
+            </div>
+          </div>
+
+
+          <button class="btn cyber-btn w-100" type="submit">
+            Login <i class="fa-solid fa-shield-halved ms-2"></i>
+          </button>
+
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none">Forgot password?</a>
+            <div class="text-muted small">
+              New here? <a href="{{ url_for('auth.register') }}" class="text-decoration-none">Create an account</a>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
