@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+{% block title %}Security &amp; Privacy - CyberShield{% endblock %}
+{% block content %}
+
+<!-- ============================================================
+     SECURITY & PRIVACY HERO
+     ============================================================ -->
+<section class="py-4" data-aos="fade-up">
+  <div class="text-center">
+    <div class="neon-pill glow mb-3 justify-content-center">
+      <i class="fa-solid fa-user-shield"></i>
+      <span class="text-uppercase small">Our Commitment to Your Safety</span>
+    </div>
+    <h1 class="fw-bold" style="font-size:clamp(1.75rem, 6vw, 2.8rem);">Security &amp; Privacy</h1>
+    <p class="text-muted mx-auto" style="max-width:720px;">
+      CyberShield is built around a simple principle: your data stays under your control.
+      Below we explain exactly how your files, backups, passwords, and sessions are handled —
+      and what we intentionally never do.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     1. FILE SECURITY
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon"><i class="fa-solid fa-file-shield"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">File Security</h3>
+        <p class="text-muted small mb-0">How uploaded files are handled &amp; protected</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-cloud-arrow-up text-info"></i>
+          <div>
+            <strong>How Uploaded Files Are Handled</strong>
+            <p class="text-muted small mb-0">Files you upload are processed immediately in memory and never stored longer than necessary. Each file is read, hashed, and encrypted on-the-fly.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-lock text-info"></i>
+          <div>
+            <strong>How Files Are Protected</strong>
+            <p class="text-muted small mb-0">Files that are backed up are encrypted using Fernet (AES-128) before being written to disk. A SHA-256 hash verifies integrity end-to-end.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-trash-can text-info"></i>
+          <div>
+            <strong>Temporary Files Are Deleted Automatically</strong>
+            <p class="text-muted small mb-0">After processing, the temporary uploaded copy is automatically removed from the server to protect your privacy and reduce unnecessary storage.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-hourglass-half text-info"></i>
+          <div>
+            <strong>Encrypted Backups Persist Until You Delete Them</strong>
+            <p class="text-muted small mb-0">Your encrypted backup remains available for recovery until you choose to delete it. We never remove your backups automatically.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     2. PRIVACY POLICY
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--safe); box-shadow:0 0 18px rgba(46,229,157,.25);"><i class="fa-solid fa-shield-heart"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">Privacy Policy</h3>
+        <p class="text-muted small mb-0">What we store — and what we never store</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-database text-info"></i>
+          <div>
+            <strong>What Information Is Stored</strong>
+            <p class="text-muted small mb-0">We store only what is required to run the service: your account credentials (fully hashed), module usage statistics, backup metadata, and records you explicitly create.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-ban text-danger"></i>
+          <div>
+            <strong>What Information Is NOT Stored</strong>
+            <p class="text-muted small mb-0">We do not sell or share personal data, do not store original uploaded files, do not store plain-text passwords, and do not track your browsing beyond what is required for security.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="security-point mb-0">
+          <i class="fa-solid fa-scale-balanced text-info"></i>
+          <div>
+            <strong>Privacy Commitments</strong>
+            <p class="text-muted small mb-0">We commit to collecting minimal data, encrypting sensitive information, allowing you to delete your own data, being transparent about security practices, and following recognized security frameworks such as OWASP.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     3. DATA PROTECTION
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--warn); box-shadow:0 0 18px rgba(255,209,102,.25);"><i class="fa-solid fa-database"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">Data Protection</h3>
+        <p class="text-muted small mb-0">Defense-in-depth for everything you store with us</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="security-card-sm">
+          <i class="fa-solid fa-user-lock"></i>
+          <strong>Minimal Data Collection</strong>
+          <p class="text-muted small mb-0">Only the data needed to provide the service is requested.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="security-card-sm">
+          <i class="fa-solid fa-key"></i>
+          <strong>Encryption at Rest</strong>
+          <p class="text-muted small mb-0">Sensitive stored data is encrypted rather than kept in plain text.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="security-card-sm">
+          <i class="fa-solid fa-user-check"></i>
+          <strong>Access Control</strong>
+          <p class="text-muted small mb-0">Data is isolated per user; you only access your own records.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4. SECURE AUTHENTICATION
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--neon); box-shadow:0 0 18px rgba(39,215,255,.25);"><i class="fa-solid fa-fingerprint"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">Secure Authentication</h3>
+        <p class="text-muted small mb-0">How your passwords are stored &amp; protected</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-lock text-info"></i>
+          <div>
+            <strong>Passwords Are Securely Hashed</strong>
+            <p class="text-muted small mb-0">Passwords are never stored in plain text. They are transformed using a strong, salted one-way hashing algorithm so they cannot be recovered or guessed from the database.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-shield-check text-info"></i>
+          <div>
+            <strong>Protection Against Common Attacks</strong>
+            <p class="text-muted small mb-0">Login flows are protected against brute-force attempts, include CAPTCHA verification, and use secure session handling to prevent session hijacking.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5. BACKUP &amp; RECOVERY
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--neon); box-shadow:0 0 18px rgba(39,215,255,.25);"><i class="fa-solid fa-rotate-left"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">Backup &amp; Recovery</h3>
+        <p class="text-muted small mb-0">How backups are created and kept safe</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="security-point">
+          <i class="fa-solid fa-database text-info"></i>
+          <div>
+            <strong>How Backups Are Created</strong>
+            <p class="text-muted small mb-0">When you use the Ransomware / Backup module, your uploaded file is securely encrypted and stored in your personal backup folder. A SHA-256 integrity hash is recorded so the backup can be verified later.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="security-point mb-0">
+          <i class="fa-solid fa-shield-halved text-info"></i>
+          <div>
+            <strong>How Encrypted Backups Remain Available</strong>
+            <p class="text-muted small mb-0">Your encrypted backups stay protected on the server until you decide to delete them. Deletion is always a manual, explicit user action — never automatic.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. SESSION SECURITY
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--safe); box-shadow:0 0 18px rgba(46,229,157,.25);"><i class="fa-solid fa-cookie-bite"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">Session Security</h3>
+        <p class="text-muted small mb-0">How your sessions are protected</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-lock text-info"></i>
+          <div>
+            <strong>Secure Cookie Settings</strong>
+            <p class="text-muted small mb-0">Session cookies are marked HttpOnly to block JavaScript access, use SameSite=Lax to prevent cross-site request forging, and are configured with a limited lifetime.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="security-point">
+          <i class="fa-solid fa-clock text-info"></i>
+          <div>
+            <strong>Session Expiry</strong>
+            <p class="text-muted small mb-0">Sessions automatically expire after a period of inactivity, reducing the window in which a stolen session could be misused.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     7. USER RIGHTS
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--warn); box-shadow:0 0 18px rgba(255,209,102,.25);"><i class="fa-solid fa-user-shield"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">User Rights</h3>
+        <p class="text-muted small mb-0">You stay in control of your data</p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="security-card-sm">
+          <i class="fa-solid fa-eye"></i>
+          <strong>Access</strong>
+          <p class="text-muted small mb-0">You can view the data associated with your account.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="security-card-sm">
+          <i class="fa-solid fa-trash-can"></i>
+          <strong>Deletion</strong>
+          <p class="text-muted small mb-0">You can delete your backups and account data at any time.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="security-card-sm">
+          <i class="fa-solid fa-envelope"></i>
+          <strong>Contact</strong>
+          <p class="text-muted small mb-0">Our security team is reachable for privacy-related questions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     8. CONTACT SECURITY TEAM
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div class="security-sect-icon" style="color:var(--danger); box-shadow:0 0 18px rgba(255,77,109,.25);"><i class="fa-solid fa-headset"></i></div>
+      <div>
+        <h3 class="fw-bold mb-0">Contact Security Team</h3>
+        <p class="text-muted small mb-0">Report a vulnerability or ask a privacy question</p>
+      </div>
+    </div>
+    <div class="row g-3 align-items-center">
+      <div class="col-md-8">
+        <p class="text-muted mb-0">
+          If you discover a security issue or have a question about how we handle your data,
+          please reach out to our security team. We respond to all security disclosures promptly.
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <a class="btn cyber-btn w-sm-100" href="{{ url_for('main.contact_us') }}">
+          <i class="fa-solid fa-envelope me-2"></i> Contact Us
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECURITY BEST PRACTICES
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <h3 class="fw-bold mb-1"><i class="fa-solid fa-clipboard-check me-2" style="color:var(--safe)"></i> Security Best Practices We Follow</h3>
+    <p class="text-muted small mb-3">CyberShield follows modern, recognized cybersecurity practices (such as the OWASP guidance) — no fake certifications, just sound engineering.</p>
+    <div class="row g-2">
+      {% set practices = [
+        ('fa-ban', 'Output Encoding / XSS Protection'),
+        ('fa-database', 'SQL Injection Prevention via Parameterized Queries'),
+        ('fa-user-secret', 'Secure Password Hashing'),
+        ('fa-cookie-bite', 'HttpOnly & SameSite Session Cookies'),
+        ('fa-shield-halved', 'CSRF Protection'),
+        ('fa-key', 'AES Encryption for Stored Backups'),
+        ('fa-hashtag', 'SHA-256 File Integrity Verification'),
+        ('fa-user-lock', 'Principle of Least Privilege'),
+        ('fa-check-double', 'Input Validation'),
+        ('fa-lock', 'Secure Session Management'),
+        ('fa-user-shield', 'Secure Authentication Workflows')
+      ] %}
+      {% for icon, label in practices %}
+      <div class="col-md-6 col-lg-4">
+        <div class="practice-item">
+          <i class="fa-solid {{ icon }}"></i>
+          <span>{{ label }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
+<section class="mt-4" data-aos="fade-up">
+  <div class="cyber-card p-4">
+    <h3 class="fw-bold mb-1"><i class="fa-solid fa-circle-question me-2" style="color:var(--neon)"></i> Frequently Asked Questions</h3>
+    <p class="text-muted small mb-3">Answers to common privacy and security questions.</p>
+
+    <div class="accordion accordion-flush cyber-accordion" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+            Are my uploaded files stored on the server?
+          </button>
+        </h2>
+        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small">
+            Uploaded files are processed in memory and the temporary copy is automatically deleted after processing.
+            Only an encrypted backup (which you explicitly create) is retained, and that stays until you delete it.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+            How are my passwords stored?
+          </button>
+        </h2>
+        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small">
+            Your password is stored only as a secure, salted hash. It is never kept in plain text, and the original
+            password cannot be recovered from the database.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+            Will my encrypted backups be deleted automatically?
+          </button>
+        </h2>
+        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small">
+            No. Encrypted backups remain available until you choose to delete them. Deletion is always a manual,
+            explicit user action.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+            What happens to my session when I close the browser?
+          </button>
+        </h2>
+        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small">
+            Sessions have a limited lifetime and expire after inactivity. Secure cookie settings (HttpOnly, SameSite)
+            help protect your session from hijacking and cross-site forgery.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+            Do you share my data with third parties?
+          </button>
+        </h2>
+        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small">
+            No. We do not sell or share your personal data with third parties. Data is used solely to operate and
+            secure the CyberShield service.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

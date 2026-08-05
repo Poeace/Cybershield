@@ -20,6 +20,12 @@ def contact_us():
     return render_template("contact.html")
 
 
+@main_bp.route("/security")
+def security():
+    """Security & Privacy informational page."""
+    return render_template("security.html")
+
+
 @main_bp.route("/api/home/stats")
 def api_home_stats():
     """JSON endpoint returning live homepage statistics from the database."""

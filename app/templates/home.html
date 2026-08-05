@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div class="col-md-4" data-aos="flip-left" data-aos-delay="190">
+<div class="col-md-4" data-aos="flip-left" data-aos-delay="190">
       <div class="cyber-card p-4 h-100">
         <div class="mb-3">
           <i class="fa-solid fa-shield" style="font-size:28px; color: var(--neon);"></i>
@@ -86,26 +86,145 @@
   </div>
 </section>
 
+<!-- ===== SECURITY BADGE — placed directly below the Features section ===== -->
+<section class="mt-5 security-badge-section" data-aos="fade-up">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-lock me-2" style="color:var(--safe)"></i>Security Features</h2>
+    <p class="text-muted mx-auto" style="max-width:660px;">Every file and session is protected with modern, recognized encryption and security practices.</p>
+    <div class="protected-status mt-3"><span class="pulse-dot"></span> Protected</div>
+  </div>
+
+  <div class="row g-3">
+    {% set badges = [
+      ('fa-lock', 'AES Encryption'),
+      ('fa-hashtag', 'SHA-256 Integrity Verification'),
+      ('fa-user-lock', 'Secure Session Management'),
+      ('fa-database', 'Encrypted Backup Storage'),
+      ('fa-trash-can', 'Automatic Temporary File Deletion'),
+      ('fa-fingerprint', 'Secure Authentication')
+    ] %}
+    {% for icon, label in badges %}
+    <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 60 }}">
+      <div class="badge-card">
+        <div class="badge-icon"><i class="fa-solid {{ icon }}"></i></div>
+        <div class="badge-title">{{ label }}</div>
+        <div class="small text-muted"><i class="fa-solid fa-check-circle" style="color:var(--safe)"></i> Enabled</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ===== LIVE STATS — loads live data from the database via /api/home/stats ===== -->
 <section class="mt-5" data-aos="fade-up">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-chart-line me-2" style="color:var(--neon)"></i>Live Activity</h2>
+    <p class="text-muted mx-auto" style="max-width:660px;">Real-time statistics loaded directly from the database.</p>
+  </div>
   <div class="row g-3">
     <div class="col-md-4" >
-      <div class="cyber-card p-4">
-        <div class="small text-muted">Registered Users</div>
-        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem);" data-counter="0" data-speed="950" data-format="comma" id="stat-registered-users">0</div>
+      <div class="cyber-card p-4 h-100">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="fa-solid fa-users" style="font-size:1.4rem; color:var(--neon);"></i>
+          <span class="text-muted small">Registered Users</span>
+        </div>
+        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem); color:var(--neon);" data-counter="0" data-speed="950" data-format="comma" id="stat-registered-users">0</div>
+        <div class="mt-2 small text-muted"><span class="pulse-dot"></span> Live from database</div>
       </div>
     </div>
     <div class="col-md-4" >
-      <div class="cyber-card p-4">
-        <div class="small text-muted">Threats Detected</div>
-        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem);" data-counter="0" data-speed="900" data-format="comma" id="stat-threats-detected">0</div>
+      <div class="cyber-card p-4 h-100">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size:1.4rem; color:var(--danger);"></i>
+          <span class="text-muted small">Threats Detected</span>
+        </div>
+        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem); color:var(--danger);" data-counter="0" data-speed="900" data-format="comma" id="stat-threats-detected">0</div>
+        <div class="mt-2 small text-muted"><span class="pulse-dot"></span> Live from database</div>
       </div>
     </div>
     <div class="col-md-4" >
-      <div class="cyber-card p-4">
-        <div class="small text-muted">Protected Sessions</div>
-        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem);" data-counter="0" data-speed="1000" data-format="comma" id="stat-protected-sessions">0</div>
+      <div class="cyber-card p-4 h-100">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="fa-solid fa-shield-halved" style="font-size:1.4rem; color:var(--safe);"></i>
+          <span class="text-muted small">Protected Sessions</span>
+        </div>
+        <div class="display-5 fw-bold" style="font-size:clamp(1.5rem, 5.5vw, 2.4rem); color:var(--safe);" data-counter="0" data-speed="1000" data-format="comma" id="stat-protected-sessions">0</div>
+        <div class="mt-2 small text-muted"><span class="pulse-dot"></span> Live from database</div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="mt-5 trust-banner" data-aos="fade-up">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-7 position-relative">
+      <div class="neon-pill glow mb-3">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span class="text-uppercase small">Trusted Security</span>
+      </div>
+      <h3 class="trust-banner-title">Your Privacy and Security Come First</h3>
+      <p class="text-muted mt-2">
+        Your files are processed securely inside CyberShield. Temporary uploaded files are automatically
+        removed after processing. Encrypted backups remain protected until you choose to delete them.
+        Your passwords are securely hashed. Your sessions are protected using secure cookie settings.
+        CyberShield follows modern cybersecurity best practices to protect your information.
+      </p>
+      <ul class="trust-banner-list mt-3">
+        <li>Temporary files are automatically deleted after processing.</li>
+        <li>Encrypted backups remain protected until you delete them.</li>
+        <li>Passwords are securely hashed — never stored in plain text.</li>
+        <li>Sessions are protected using secure cookie settings.</li>
+      </ul>
+    </div>
+    <div class="col-lg-5">
+      <div class="row g-2">
+        {% set trustIcons = [
+          ('fa-lock', 'Secure'),
+          ('fa-shield-halved', 'Privacy'),
+          ('fa-key', 'Encryption'),
+          ('fa-bolt', 'Fast Recovery')
+        ] %}
+        {% for icon, label in trustIcons %}
+        <div class="col-6" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 80 }}">
+          <div class="trust-banner-icon">
+            <i class="fa-solid {{ icon }}"></i>
+            <span>{{ label }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5" data-aos="fade-up">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-clipboard-check me-2" style="color:var(--safe)"></i>Security Standards &amp; Best Practices</h2>
+    <p class="text-muted mx-auto" style="max-width:680px;">CyberShield follows recognized cybersecurity practices — genuine engineering, not fake certifications.</p>
+  </div>
+
+  <div class="row g-3">
+    {% set standards = [
+      ('fa-book', 'OWASP Security Best Practices'),
+      ('fa-hashtag', 'SHA-256 File Integrity Verification'),
+      ('fa-lock', 'AES Encryption'),
+      ('fa-cookie-bite', 'Secure Session Cookies'),
+      ('fa-key', 'Password Hashing'),
+      ('fa-user-lock', 'Principle of Least Privilege'),
+      ('fa-check-double', 'Input Validation'),
+      ('fa-shield-halved', 'CSRF Protection'),
+      ('fa-database', 'SQL Injection Prevention'),
+      ('fa-ban', 'XSS Protection'),
+      ('fa-user-shield', 'Secure Authentication')
+    ] %}
+    {% for icon, label in standards %}
+    <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 40 }}">
+      <div class="standard-card">
+        <i class="fa-solid {{ icon }}"></i>
+        <span><i class="fa-solid fa-check me-1" style="color:var(--safe)"></i>{{ label }}</span>
+      </div>
+    </div>
+    {% endfor %}
   </div>
 </section>
 

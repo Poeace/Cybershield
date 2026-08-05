@@ -47,15 +47,22 @@ def encrypt_user_file(
     file_storage: FileStorage,
     user_id: int,
     backup_dir: str,
+    uploads_dir: str = None,
 ) -> Dict:
     """
-    Upload a file, save it as backup, encrypt it with Fernet, and return
-    the encryption key to the user.
+    Upload a file, save it as a temporary copy, create an encrypted backup,
+    then delete ONLY the temporary upload. The encrypted backup is retained.
+
+    Workflow:
+        User Upload -> Temporary Upload -> Encrypted Backup -> Delete Temp -> Ready
 
     Args:
         file_storage: Werkzeug FileStorage object from Flask upload.
         user_id: ID of the user.
         backup_dir: Base backup directory.
+        uploads_dir: (Optional) Temporary upload directory. If provided, the
+            uploaded file is written there temporarily and then removed after
+            the encrypted backup is created.
 
     Returns:
         Dict with:
@@ -64,6 +71,7 @@ def encrypt_user_file(
             - encrypted_name: filename with .locked extension
             - encryption_key: the Fernet key (returned to user)
             - backup_id: BackupHistory record ID
+            - temp_deleted: True if the temporary upload was removed
             - message: status message
             - error: error message if failed
 
@@ -97,16 +105,22 @@ def encrypt_user_file(
     # Ensure user backup folder exists
     user_folder = get_user_backup_folder(user_id, backup_dir)
 
-    # Save original file as backup
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    safe_backup_name = f"{timestamp}_{file_hash[:16]}_{original_filename}"
-    backup_path = os.path.join(user_folder, safe_backup_name)
+    # ------------------------------------------------------------------
+    # STEP 1: Temporary upload (stored in uploads_dir, then removed later)
+    # ------------------------------------------------------------------
+    temp_path = None
+    temp_deleted = False
+    if uploads_dir:
+        os.makedirs(uploads_dir, exist_ok=True)
+        temp_name = f"{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{file_hash[:16]}_{original_filename}"
+        temp_path = os.path.join(uploads_dir, temp_name)
+        with open(temp_path, "wb") as f:
+            f.write(file_data)
+        temp_deleted = False
 
-    with open(backup_path, "wb") as f:
-        f.write(file_data)
-
-    file_size = os.path.getsize(backup_path)
-
+    # ------------------------------------------------------------------
+    # STEP 2: Create encrypted backup
+    # ------------------------------------------------------------------
     # Generate encryption key
     key_str = generate_encryption_key()
     cipher = Fernet(key_str.encode("utf-8"))
@@ -121,9 +135,14 @@ def encrypt_user_file(
     with open(encrypted_path, "wb") as f:
         f.write(encrypted_data)
 
-    # Remove the unencrypted backup (simulating ransomware behavior)
-    if os.path.exists(backup_path):
-        os.remove(backup_path)
+    file_size = os.path.getsize(encrypted_path)
+
+    # ------------------------------------------------------------------
+    # STEP 3: Delete ONLY the temporary upload (never the encrypted backup)
+    # ------------------------------------------------------------------
+    if temp_path and os.path.exists(temp_path):
+        os.remove(temp_path)
+        temp_deleted = True
 
     # Store backup record in database
     backup_record = BackupHistory(
@@ -152,6 +171,8 @@ def encrypt_user_file(
 Hello {user.full_name},
 
 Your file "{original_filename}" has been encrypted using the CyberShield Ransomware Simulator.
+The temporary uploaded copy has been automatically deleted for your privacy.
+Your encrypted backup remains available until you choose to delete it.
 
 IMPORTANT: Save this encryption key! You will need it to decrypt your file.
 
@@ -193,7 +214,13 @@ CyberShield Security Team
         "sha256_hash": file_hash,
         "backup_date": backup_record.backup_date.strftime("%Y-%m-%d %H:%M:%S"),
         "key_emailed": True,
-        "message": f"File '{original_filename}' encrypted successfully. Encryption key has been sent to your registered email!",
+        "temp_deleted": temp_deleted,
+        "message": (
+            "Your file has been securely backed up.\n"
+            "The temporary upload has been deleted to protect your privacy "
+            "and reduce unnecessary storage.\n"
+            "Your backup remains available until you choose to delete it."
+        ),
     }
 
 

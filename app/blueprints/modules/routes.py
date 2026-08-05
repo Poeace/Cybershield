@@ -342,13 +342,16 @@ def api_upload_and_encrypt():
 
     root = current_app.root_path
     backup_dir = os.path.join(root, "backups")
+    uploads_dir = os.path.join(root, "uploads")
     os.makedirs(backup_dir, exist_ok=True)
+    os.makedirs(uploads_dir, exist_ok=True)
 
     try:
         result = encrypt_user_file(
             file_storage=file,
             user_id=current_user.user_id,
             backup_dir=backup_dir,
+            uploads_dir=uploads_dir,
         )
         return jsonify(result)
     except ValueError as e:

@@ -261,6 +261,46 @@
             </div>
           </div>
 
+<!-- Secure Backup Workflow -->
+          <div class="grid-card" style="border-color: rgba(46,229,157,0.18);">
+            <div class="card-title"><i class="fa-solid fa-shield-halved me-1" style="color:var(--safe)"></i> Secure Backup Workflow</div>
+            <div class="timeline">
+              <div class="timeline-item active">
+                <div class="timeline-dot" style="background: var(--neon);"></div>
+                <div class="timeline-content">User Upload</div>
+                <i class="fa-solid fa-cloud-arrow-up" style="color:var(--neon);"></i>
+              </div>
+              <div class="timeline-arrow">↓</div>
+              <div class="timeline-item active">
+                <div class="timeline-dot" style="background: var(--warn);"></div>
+                <div class="timeline-content">Temporary Upload</div>
+                <i class="fa-solid fa-folder-open" style="color:var(--warn);"></i>
+              </div>
+              <div class="timeline-arrow">↓</div>
+              <div class="timeline-item active">
+                <div class="timeline-dot" style="background: var(--neon2);"></div>
+                <div class="timeline-content">Create Encrypted Backup</div>
+                <i class="fa-solid fa-database" style="color:#4a7dff;"></i>
+              </div>
+              <div class="timeline-arrow">↓</div>
+              <div class="timeline-item active">
+                <div class="timeline-dot" style="background: var(--danger);"></div>
+                <div class="timeline-content">Delete Temporary Upload</div>
+                <i class="fa-solid fa-trash-can" style="color:var(--danger);"></i>
+              </div>
+              <div class="timeline-arrow">↓</div>
+              <div class="timeline-item active">
+                <div class="timeline-dot" style="background: var(--safe);"></div>
+                <div class="timeline-content">Backup Ready for Restore</div>
+                <i class="fa-solid fa-check-circle" style="color:var(--safe);"></i>
+              </div>
+            </div>
+            <div class="small text-muted mt-2" style="font-size:0.75rem;">
+              <i class="fa-solid fa-circle-info me-1" style="color:var(--safe);"></i>
+              The temporary upload is deleted automatically after the encrypted backup is created. Your backup is never deleted unless you choose to remove it.
+            </div>
+          </div>
+
           <!-- Workflow Timeline -->
           <div class="grid-card" id="timelineCard">
             <div class="card-title"><i class="fa-solid fa-timeline me-1"></i> Encryption Workflow</div>
@@ -741,11 +781,29 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
           }
 
-          resultDiv.innerHTML = `
-            <div class="alert alert-danger py-2 px-3" role="alert" style="border-left: 4px solid var(--danger);">
-              <i class="fa-solid fa-skull me-2"></i>
-              <strong>File Encrypted Successfully!</strong><br>
+resultDiv.innerHTML = `
+            <div class="alert alert-success py-3 px-3" role="alert" style="border-left: 4px solid var(--safe);">
+              <i class="fa-solid fa-shield-check me-2" style="color:var(--safe)"></i>
+              <strong>Backup Secured Successfully!</strong><br>
               <span class="small">${d.file_name} → ${d.encrypted_name}</span>
+            </div>
+
+            <div class="trust-banner mt-3" style="border-radius:16px; padding:1.1rem;">
+              <div class="d-flex align-items-start gap-2">
+                <i class="fa-solid fa-circle-check mt-1" style="color:var(--safe); font-size:1.2rem;"></i>
+                <div>
+                  <strong class="text-success">Your file has been securely backed up.</strong>
+                  <p class="small text-muted mb-2" style="line-height:1.6;">
+                    The temporary upload has been deleted to protect your privacy and reduce unnecessary storage.<br>
+                    Your backup remains available until you choose to delete it.
+                  </p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="recovery-badge"><i class="fa-solid fa-trash-can"></i> Temporary File Deleted</span>
+                    <span class="recovery-badge"><i class="fa-solid fa-database"></i> Backup Secured</span>
+                    <span class="recovery-badge"><i class="fa-solid fa-rotate-left"></i> Ready for Recovery</span>
+                  </div>
+                </div>
+              </div>
             </div>
             ${emailNotice}
           `;
