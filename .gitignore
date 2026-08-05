@@ -1,7 +1,9 @@
 # User uploaded ransomware files
 backups/
 restored/
+uploads/
 
 # Keep empty folders
 !backups/.gitkeep
 !restored/.gitkeep
+!uploads/.gitkeep
