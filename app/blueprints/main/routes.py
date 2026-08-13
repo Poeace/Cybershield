@@ -10,6 +10,12 @@ def home():
     return render_template("home.html")
 
 
+@main_bp.route("/features")
+def features():
+    """Security features informational page."""
+    return render_template("features.html")
+
+
 @main_bp.route("/about")
 def about_us():
     return render_template("about.html")

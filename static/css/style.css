@@ -1510,6 +1510,64 @@ code {
   margin-bottom: 8px;
   overflow: hidden;
 }
+
+/* ==========================================================================
+   26. FEATURES PAGE COMPONENTS
+   ========================================================================== */
+.feature-icon {
+  width: clamp(54px, 12vw, 68px);
+  height: clamp(54px, 12vw, 68px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: clamp(1.4rem, 5vw, 1.8rem);
+  border: 1px solid rgba(39, 215, 255, .3);
+  box-shadow: 0 0 18px rgba(39, 215, 255, .15);
+  transition: transform var(--t-med), box-shadow var(--t-med);
+}
+.feature-icon:hover {
+  transform: scale(1.05);
+}
+
+.feature-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(39, 215, 255, .06);
+  border: 1px solid rgba(39, 215, 255, .15);
+  border-radius: var(--r-md);
+  height: 100%;
+  transition: transform var(--t-med), border-color var(--t-med), box-shadow var(--t-med), background var(--t-med);
+}
+.feature-point:hover {
+  transform: translateY(-4px);
+  border-color: rgba(39, 215, 255, .35);
+  background: rgba(39, 215, 255, .1);
+  box-shadow: 0 14px 35px rgba(39, 215, 255, .12);
+}
+.feature-point > i {
+  font-size: 1.4rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+  min-width: 1.6rem;
+}
+.feature-point strong {
+  color: var(--text);
+  font-size: var(--fs-base);
+  font-weight: 600;
+}
+
+/* Accordion (FAQ) theme */
+.cyber-accordion .accordion-item {
+  background: transparent;
+  border: 1px solid rgba(39, 215, 255, .12);
+  border-radius: var(--r-sm) !important;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
 .cyber-accordion .accordion-button {
   background: rgba(39, 215, 255, .05);
   color: var(--text);
@@ -1531,7 +1589,7 @@ code {
 }
 
 /* ==========================================================================
-   26. HOME PAGE — SECURITY BADGE / STANDARDS / TRUST BANNER
+   27. HOME PAGE — SECURITY BADGE / STANDARDS / TRUST BANNER
    ========================================================================== */
 /* Security Badge section */
 .security-badge-section {
