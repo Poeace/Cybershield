@@ -545,6 +545,48 @@ select:focus-visible,
   user-select: none;
 }
 
+/* Password input with visibility toggle */
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group .form-control {
+  padding-right: 48px; /* Space for the toggle button */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: transparent;
+  border: none;
+  color: var(--neon);
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--t-fast), transform var(--t-fast);
+  min-height: var(--touch-min);
+}
+
+.password-toggle-btn:hover {
+  color: #4a7dff;
+  transform: scale(1.1);
+}
+
+.password-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.password-toggle-btn i {
+  pointer-events: none;
+}
+
 /* --------------------------------------------------------------------------
    10. IMAGES — always responsive
    -------------------------------------------------------------------------- */

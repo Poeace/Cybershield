@@ -403,6 +403,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ===== NEW: PASSWORD VISIBILITY TOGGLE =====
+  document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      
+      // Find the associated password input
+      const passwordInput = this.parentElement.querySelector('.password-input');
+      if (!passwordInput) return;
+      
+      // Toggle the input type between password and text
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      
+      // Update the icon
+      const icon = this.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+      }
+    });
+  });
+
   // ===== ORIGINAL: BREACH CHECK BUTTON HANDLER =====
   const breachCheckBtn = document.getElementById('checkBreachBtn');
   if (breachCheckBtn) {
