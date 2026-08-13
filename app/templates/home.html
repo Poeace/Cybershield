@@ -86,6 +86,38 @@
   </div>
 </section>
 
+<!-- ===== MOBILE-FIRST SECURITY & PRIVACY HIGHLIGHTS ===== -->
+<section class="mt-5" data-aos="fade-up">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-user-shield me-2" style="color:var(--neon)"></i>Security &amp; Privacy</h2>
+    <p class="text-muted mx-auto" style="max-width:680px;">Built for mobile users too: your protection stays visible and easy to review from any device.</p>
+  </div>
+
+  <div class="row g-3 security-quick-grid">
+    {% set quick_security = [
+      ('fa-lock', 'Encrypted Files', 'Files are processed and stored using strong encryption and integrity checks.'),
+      ('fa-shield-heart', 'Private by Design', 'We minimize stored data and avoid keeping unnecessary personal files.'),
+      ('fa-fingerprint', 'Secure Sessions', 'HttpOnly cookies and session expiry reduce hijacking risks.'),
+      ('fa-key', 'Secure Passwords', 'Passwords are salted and hashed instead of kept in plain text.')
+    ] %}
+    {% for icon, title, desc in quick_security %}
+    <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 60 }}">
+      <div class="security-quick-card h-100">
+        <div class="security-quick-icon"><i class="fa-solid {{ icon }}"></i></div>
+        <h5 class="fw-bold mb-2">{{ title }}</h5>
+        <p class="text-muted small mb-0">{{ desc }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-4 text-center">
+    <a href="{{ url_for('main.security') }}" class="btn cyber-btn btn-lg w-sm-100">
+      <i class="fa-solid fa-shield-halved me-2"></i> View full security policy
+    </a>
+  </div>
+</section>
+
 <!-- ===== SECURITY BADGE — placed directly below the Features section ===== -->
 <section class="mt-5 security-badge-section" data-aos="fade-up">
   <div class="text-center mb-4">

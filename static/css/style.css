@@ -1591,6 +1591,53 @@ code {
 /* ==========================================================================
    27. HOME PAGE — SECURITY BADGE / STANDARDS / TRUST BANNER
    ========================================================================== */
+/* Mobile-friendly Security & Privacy highlights */
+.security-quick-grid {
+  align-items: stretch;
+}
+.security-quick-card {
+  background: var(--panel);
+  border: 1px solid rgba(39, 215, 255, .16);
+  border-radius: var(--r-lg);
+  padding: clamp(.9rem, 3vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--t-med), border-color var(--t-med), box-shadow var(--t-med);
+}
+.security-quick-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(39, 215, 255, .38);
+  box-shadow: 0 18px 42px rgba(39, 215, 255, .12);
+}
+.security-quick-icon {
+  width: clamp(42px, 12vw, 54px);
+  height: clamp(42px, 12vw, 54px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  color: var(--neon);
+  background: rgba(39, 215, 255, .1);
+  border: 1px solid rgba(39, 215, 255, .28);
+}
+@media (max-width: 767.98px) {
+  .security-quick-card {
+    padding: .9rem .75rem;
+  }
+  .security-quick-card h5 {
+    font-size: .95rem;
+  }
+  .security-quick-card p {
+    font-size: .72rem;
+    line-height: 1.5;
+  }
+}
+
 /* Security Badge section */
 .security-badge-section {
   position: relative;
