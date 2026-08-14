@@ -166,6 +166,23 @@ class CyberReport(db.Model):
     resolved = db.Column(db.Boolean, nullable=False, default=False)
 
 
+class UPIFraudReport(db.Model):
+    """Stores UPI fraud reports submitted by users with unique report IDs for tracking."""
+    __tablename__ = "upi_fraud_reports"
+
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(db.String(32), nullable=False, unique=True, index=True)  # Unique report ID
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    user_email = db.Column(db.String(120), nullable=False)
+    upi_handle = db.Column(db.String(120), nullable=False)
+    threat_level = db.Column(db.String(30), nullable=False)  # High Risk / Medium Risk / Safe
+    risk_score = db.Column(db.Integer, nullable=False)
+    detection_result = db.Column(db.Text, nullable=True)  # JSON or formatted reasons
+    submission_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    cyber_team_notified = db.Column(db.Boolean, nullable=False, default=False)
+    user_confirmation_sent = db.Column(db.Boolean, nullable=False, default=False)
+    status = db.Column(db.String(30), nullable=False, default="pending")  # pending / under_review / resolved / closed
+
 
 @login_manager.user_loader
 def load_user(user_id: str):

@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% block title %}My UPI Fraud Reports - CyberShield{% endblock %}
+{% block content %}
+<section class="py-4" data-aos="fade-up">
+  <div class="container-fluid fullpage-grid px-4">
+    <div class="row g-4">
+      <!-- ===== HEADER & NAVIGATION ===== -->
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="fw-bold mb-2"><i class="fa-solid fa-history me-2" style="color:var(--neon)"></i>My UPI Fraud Reports</h2>
+            <p class="text-muted">Track all your submitted reports and their investigation status</p>
+          </div>
+          <a href="{{ url_for('modules.upi_module') }}" class="btn btn-outline-primary">
+            <i class="fa-solid fa-arrow-left me-2"></i> Back to Scanner
+          </a>
+        </div>
+      </div>
+
+      <!-- ===== SUMMARY CARDS ===== -->
+      <div class="col-12">
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="grid-card">
+              <div class="text-muted small mb-1">Total Reports</div>
+              <div class="card-value-large" style="color: var(--neon);">{{ total_reports }}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="grid-card">
+              <div class="text-muted small mb-1">Pending Review</div>
+              <div class="card-value-large" style="color: #ffc107;">
+                {{ reports | selectattr('status', 'equalto', 'pending') | list | length }}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="grid-card">
+              <div class="text-muted small mb-1">Under Investigation</div>
+              <div class="card-value-large" style="color: #ff9800;">
+                {{ reports | selectattr('status', 'equalto', 'under_review') | list | length }}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="grid-card">
+              <div class="text-muted small mb-1">Resolved</div>
+              <div class="card-value-large" style="color: #4caf50;">
+                {{ reports | selectattr('status', 'equalto', 'resolved') | list | length }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTS LIST ===== -->
+      <div class="col-12">
+        {% if reports and reports|length > 0 %}
+          <div class="cyber-card p-4">
+            <div class="mb-4">
+              <h4 class="fw-bold mb-3"><i class="fa-solid fa-list me-2"></i>All Reports</h4>
+            </div>
+
+            <!-- Reports Table (Desktop View) -->
+            <div class="d-none d-md-block">
+              <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                  <thead>
+                    <tr class="border-bottom" style="border-color: rgba(39,215,255,0.2);">
+                      <th class="text-muted small">Report ID</th>
+                      <th class="text-muted small">UPI ID</th>
+                      <th class="text-muted small">Threat Level</th>
+                      <th class="text-muted small">Risk Score</th>
+                      <th class="text-muted small">Status</th>
+                      <th class="text-muted small">Submitted</th>
+                      <th class="text-muted small">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for report in reports %}
+                      <tr class="border-bottom" style="border-color: rgba(39,215,255,0.1);">
+                        <td>
+                          <code class="text-info" style="font-size: 0.85rem;">{{ report.report_id }}</code>
+                        </td>
+                        <td>
+                          <code style="color: var(--neon); font-size: 0.9rem;">{{ report.upi_handle }}</code>
+                        </td>
+                        <td>
+                          <span class="badge
+                            {% if report.threat_level == 'High Risk' %}badge-danger
+                            {% elif report.threat_level == 'Medium Risk' %}badge-warning
+                            {% else %}badge-success{% endif %}">
+                            {{ report.threat_level }}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="{% if report.risk_score >= 75 %}text-danger
+                            {% elif report.risk_score >= 35 %}text-warning
+                            {% else %}text-success{% endif %}">
+                            {{ report.risk_score }}/100
+                          </span>
+                        </td>
+                        <td>
+                          <span class="badge
+                            {% if report.status == 'pending' %}bg-warning text-dark
+                            {% elif report.status == 'under_review' %}bg-info
+                            {% elif report.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {{ report.status | replace('_', ' ') | title }}
+                          </span>
+                        </td>
+                        <td class="text-muted small">{{ report.submission_date }}</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#reportModal{{ loop.index }}">
+                            <i class="fa-solid fa-eye"></i> View
+                          </button>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Reports Cards (Mobile View) -->
+            <div class="d-md-none">
+              <div class="row g-3">
+                {% for report in reports %}
+                  <div class="col-12">
+                    <div class="border rounded p-3" style="border-color: rgba(39,215,255,0.2) !important;">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <code class="text-info small">{{ report.report_id }}</code>
+                          <div class="fw-bold" style="color: var(--neon); margin-top: 0.25rem;">{{ report.upi_handle }}</div>
+                        </div>
+                        <span class="badge
+                          {% if report.threat_level == 'High Risk' %}badge-danger
+                          {% elif report.threat_level == 'Medium Risk' %}badge-warning
+                          {% else %}badge-success{% endif %}">
+                          {{ report.threat_level }}
+                        </span>
+                      </div>
+                      <div class="row g-2 mb-3">
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Risk Score</div>
+                          <div class="{% if report.risk_score >= 75 %}text-danger
+                            {% elif report.risk_score >= 35 %}text-warning
+                            {% else %}text-success{% endif %}">
+                            {{ report.risk_score }}/100
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Status</div>
+                          <span class="badge
+                            {% if report.status == 'pending' %}bg-warning text-dark
+                            {% elif report.status == 'under_review' %}bg-info
+                            {% elif report.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {{ report.status | replace('_', ' ') | title }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="text-muted small mb-3">{{ report.submission_date }}</div>
+                      <button class="btn btn-sm btn-outline-info w-100" data-bs-toggle="modal" data-bs-target="#reportModal{{ loop.index }}">
+                        <i class="fa-solid fa-eye me-1"></i> View Details
+                      </button>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== DETAILED MODALS ===== -->
+          {% for report in reports %}
+            <div class="modal fade" id="reportModal{{ loop.index }}" tabindex="-1" aria-labelledby="reportModalLabel{{ loop.index }}" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content bg-dark border" style="border-color: rgba(39,215,255,0.2) !important;">
+                  <div class="modal-header border-bottom" style="border-color: rgba(39,215,255,0.2) !important;">
+                    <h5 class="modal-title fw-bold" id="reportModalLabel{{ loop.index }}">
+                      <i class="fa-solid fa-file-shield me-2" style="color: var(--neon);"></i>Report Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- Report Header Info -->
+                    <div class="mb-4 pb-3 border-bottom" style="border-color: rgba(39,215,255,0.2);">
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Report ID</div>
+                          <code class="text-info">{{ report.report_id }}</code>
+                        </div>
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Submission Date</div>
+                          <div class="small">{{ report.submission_date }}</div>
+                        </div>
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Suspicious UPI ID</div>
+                          <code style="color: var(--neon);">{{ report.upi_handle }}</code>
+                        </div>
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Status</div>
+                          <span class="badge
+                            {% if report.status == 'pending' %}bg-warning text-dark
+                            {% elif report.status == 'under_review' %}bg-info
+                            {% elif report.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {{ report.status | replace('_', ' ') | title }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Threat Assessment -->
+                    <div class="mb-4 pb-3 border-bottom" style="border-color: rgba(39,215,255,0.2);">
+                      <h6 class="fw-bold mb-3"><i class="fa-solid fa-triangle-exclamation me-2" style="color: #ff9800;"></i>Threat Assessment</h6>
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Threat Level</div>
+                          <span class="badge
+                            {% if report.threat_level == 'High Risk' %}badge-danger
+                            {% elif report.threat_level == 'Medium Risk' %}badge-warning
+                            {% else %}badge-success{% endif %}">
+                            {{ report.threat_level }}
+                          </span>
+                        </div>
+                        <div class="col-6">
+                          <div class="text-muted small mb-1">Risk Score</div>
+                          <div class="fw-bold {% if report.risk_score >= 75 %}text-danger
+                            {% elif report.risk_score >= 35 %}text-warning
+                            {% else %}text-success{% endif %}">
+                            {{ report.risk_score }}/100
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Detection Results -->
+                    <div class="mb-4 pb-3 border-bottom" style="border-color: rgba(39,215,255,0.2);">
+                      <h6 class="fw-bold mb-3"><i class="fa-solid fa-magnifying-glass me-2" style="color: var(--neon);"></i>Detection Results</h6>
+                      <div class="bg-dark rounded p-3" style="background-color: rgba(0,0,0,0.5) !important;">
+                        <ul class="mb-0 ps-4 text-muted small">
+                          {% for line in report.detection_result.split('\n') %}
+                            {% if line.strip() %}
+                              <li>{{ line.strip() }}</li>
+                            {% endif %}
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <!-- Notification Status -->
+                    <div class="mb-4">
+                      <h6 class="fw-bold mb-3"><i class="fa-solid fa-envelope me-2" style="color: #4caf50;"></i>Notification Status</h6>
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <div class="d-flex align-items-center gap-2">
+                            {% if report.cyber_team_notified %}
+                              <i class="fa-solid fa-check-circle" style="color: #4caf50;"></i>
+                              <span class="text-success small">Cyber Team Notified</span>
+                            {% else %}
+                              <i class="fa-solid fa-clock" style="color: #ffc107;"></i>
+                              <span class="text-warning small">Pending Notification</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="d-flex align-items-center gap-2">
+                            {% if report.user_confirmation_sent %}
+                              <i class="fa-solid fa-check-circle" style="color: #4caf50;"></i>
+                              <span class="text-success small">Confirmation Sent</span>
+                            {% else %}
+                              <i class="fa-solid fa-clock" style="color: #ffc107;"></i>
+                              <span class="text-warning small">Pending Confirmation</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Important Notice -->
+                    <div class="alert alert-warning mb-0" role="alert">
+                      <i class="fa-solid fa-lightbulb me-2"></i>
+                      <strong>Important:</strong> Please avoid making any transactions using the reported UPI ID until the investigation is complete. Our cyber team will contact you with updates via email.
+                    </div>
+                  </div>
+                  <div class="modal-footer border-top" style="border-color: rgba(39,215,255,0.2) !important;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+        {% else %}
+          <!-- Empty State -->
+          <div class="cyber-card p-5">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center py-5">
+              <i class="fa-solid fa-inbox" style="font-size: 4rem; color: rgba(39,215,255,0.2); margin-bottom: 1.5rem;"></i>
+              <h5 class="fw-bold mb-2">No Reports Yet</h5>
+              <p class="text-muted mb-4">You haven't submitted any UPI fraud reports yet.</p>
+              <a href="{{ url_for('modules.upi_module') }}" class="btn cyber-btn">
+                <i class="fa-solid fa-arrow-left me-2"></i> Go to UPI Fraud Scanner
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- ===== INFORMATION SECTION ===== -->
+      <div class="col-12">
+        <div class="grid-card">
+          <h5 class="fw-bold mb-3"><i class="fa-solid fa-info-circle me-2" style="color: var(--neon);"></i>How Report Tracking Works</h5>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="d-flex gap-3">
+                <div style="font-size: 2rem; color: #ffc107;">1</div>
+                <div>
+                  <h6 class="fw-bold mb-1">Submit Report</h6>
+                  <p class="text-muted small mb-0">You submit a UPI ID through our fraud scanner with your concerns.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex gap-3">
+                <div style="font-size: 2rem; color: #ff9800;">2</div>
+                <div>
+                  <h6 class="fw-bold mb-1">Dual Notifications</h6>
+                  <p class="text-muted small mb-0">Both you and our cyber team receive confirmation emails with report details.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex gap-3">
+                <div style="font-size: 2rem; color: #4caf50;">3</div>
+                <div>
+                  <h6 class="fw-bold mb-1">Track Progress</h6>
+                  <p class="text-muted small mb-0">Check this page anytime to view report status and investigation updates.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

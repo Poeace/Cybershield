@@ -6,6 +6,7 @@ Provides upload → encrypt → show key → decrypt with key → download workf
 
 import json
 import os
+import uuid
 
 from flask import render_template, request, jsonify, current_app, send_file
 from flask_login import login_required, current_user
@@ -14,7 +15,7 @@ from flask_mail import Message
 from app.blueprints.modules import modules_bp
 from app.extensions import db, mail
 from app.models import (
-    ModuleUsage, ReportedUPI, UPIScanHistory, CyberReport,
+    ModuleUsage, ReportedUPI, UPIScanHistory, CyberReport, UPIFraudReport,
     BackupHistory, BreachCheckLog,
 )
 from app.qr_reader import decode_qr_upi_handle
@@ -214,11 +215,31 @@ def upi_module():
                 db.session.add(cyber_report)
                 db.session.commit()
 
+                # Generate unique report ID
+                report_id = f"UFR-{uuid.uuid4().hex[:12].upper()}"
+                
+                # Create UPIFraudReport entry for user tracking
+                upi_fraud_report = UPIFraudReport(
+                    report_id=report_id,
+                    user_id=current_user.user_id,
+                    user_email=current_user.email,
+                    upi_handle=upi_handle,
+                    threat_level=risk.status,
+                    risk_score=risk.risk_score,
+                    detection_result="\n".join(merged_reasons),
+                    cyber_team_notified=False,
+                    user_confirmation_sent=False,
+                    status="pending"
+                )
+                db.session.add(upi_fraud_report)
+                db.session.commit()
+
                 # Send email alert to admin/cyber team
+                cyber_team_email = current_app.config.get("MAIL_DEFAULT_SENDER")
                 try:
                     msg = Message(
                         subject=f"[CyberShield Alert] UPI Fraud Report - {upi_handle}",
-                        recipients=[current_app.config.get("MAIL_DEFAULT_SENDER")],
+                        recipients=[cyber_team_email],
                         body=f"""
 CyberShield - UPI Fraud Report
 
@@ -226,20 +247,74 @@ Reported by: {current_user.full_name} ({current_user.username})
 Email: {current_user.email}
 UPI Handle: {upi_handle}
 Risk Score: {risk.risk_score}/100
-Status: {risk.status}
+Threat Level: {risk.status}
 
-Reasons:
+Detection Results:
 {chr(10).join(f'- {r}' for r in merged_reasons)}
 
 Report ID: {cyber_report.id}
+Fraud Report ID: {report_id}
 Reported at: {cyber_report.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+
+---
+This is a fraud report submission. The user has flagged this UPI ID as suspicious.
+Please review and take appropriate action.
                         """.strip(),
                     )
                     mail.send(msg)
+                    upi_fraud_report.cyber_team_notified = True
+                    db.session.commit()
                 except Exception as mail_err:
-                    current_app.logger.warning(f"Failed to send cyber report email: {mail_err}")
+                    current_app.logger.warning(f"Failed to send cyber report email to team: {mail_err}")
 
-                cyber_report_success = f"Report for {upi_handle} has been sent to the Cyber Security team for investigation."
+                # Send confirmation email to user
+                try:
+                    user_msg = Message(
+                        subject="CyberShield Fraud Report Confirmation",
+                        recipients=[current_user.email],
+                        body=f"""
+Dear {current_user.full_name},
+
+Thank you for reporting suspicious activity to CyberShield.
+
+Your report has been successfully submitted to our Cyber Security team for investigation.
+
+--- REPORT DETAILS ---
+Report ID: {report_id}
+Suspicious UPI ID: {upi_handle}
+Threat Status: {risk.status}
+Risk Score: {risk.risk_score}/100
+Submission Date & Time: {upi_fraud_report.submission_date.strftime('%Y-%m-%d %H:%M:%S')}
+
+--- DETECTION RESULTS ---
+{chr(10).join(f'• {r}' for r in merged_reasons)}
+
+--- NEXT STEPS ---
+Our cyber team has received your report and will review it within 24 hours.
+You will be notified via email once the investigation is complete.
+
+IMPORTANT: Please avoid making any transactions using the reported UPI ID 
+until the investigation is complete.
+
+--- TRACK YOUR REPORT ---
+You can view this and other reports at any time by visiting your 
+"My Reports" section in your CyberShield dashboard.
+
+If you have any questions or additional information to provide, 
+please don't hesitate to contact us.
+
+Best regards,
+CyberShield Cyber Security Team
+support@cybershield.local
+                        """.strip(),
+                    )
+                    mail.send(user_msg)
+                    upi_fraud_report.user_confirmation_sent = True
+                    db.session.commit()
+                except Exception as mail_err:
+                    current_app.logger.warning(f"Failed to send confirmation email to user: {mail_err}")
+
+                cyber_report_success = f"Report #{report_id} for {upi_handle} has been successfully submitted! A confirmation email has been sent to {current_user.email}. Our Cyber Security team will review it shortly."
             except Exception as e:
                 handle_error = f"Failed to submit cyber report: {str(e)}"
 
@@ -301,6 +376,43 @@ Reported at: {cyber_report.created_at.strftime('%Y-%m-%d %H:%M:%S')}
         scan=scan,
         handle_error=handle_error,
         cyber_report_success=cyber_report_success,
+    )
+
+
+# =============================================================================
+# VIEW UPI FRAUD REPORTS
+# =============================================================================
+
+@modules_bp.route("/upi/my-reports", methods=["GET"])
+@login_required
+def view_upi_reports():
+    """View all UPI fraud reports submitted by the current user."""
+    # Fetch all reports for the current user, ordered by newest first
+    reports = db.session.execute(
+        db.select(UPIFraudReport).where(UPIFraudReport.user_id == current_user.user_id).order_by(UPIFraudReport.submission_date.desc())
+    ).scalars().all()
+    
+    # Format reports for display
+    formatted_reports = []
+    for report in reports:
+        formatted_reports.append({
+            "report_id": report.report_id,
+            "upi_handle": report.upi_handle,
+            "threat_level": report.threat_level,
+            "risk_score": report.risk_score,
+            "submission_date": report.submission_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "submission_date_obj": report.submission_date,
+            "status": report.status,
+            "cyber_team_notified": report.cyber_team_notified,
+            "user_confirmation_sent": report.user_confirmation_sent,
+            "detection_result": report.detection_result,
+        })
+    
+    _log_module_access(current_user.user_id, "upi_fraud_reports_view")
+    return render_template(
+        "modules/upi_reports.html",
+        reports=formatted_reports,
+        total_reports=len(formatted_reports),
     )
 
 
